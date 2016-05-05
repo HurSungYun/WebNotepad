@@ -1,2 +1,113 @@
-<h1>Page#index</h1>
-<p>Find me in app/views/page/index.html.erb</p>
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<body>
+
+<div class="row appTitle">
+ <h1><center>WebNotepad</center></h1>
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    <ul class="list-group">
+      <li class="list-group-item"><span class="badge">12</span>All</li>
+      <li class="list-group-item"><span class="badge">5</span>Label1</li> 
+      <li class="list-group-item"><span class="badge">3</span>Label2</li>
+      <li class="list-group-item">
+        <form class="form-inline">
+          <div class="form-group">
+            <input type="text" class="form-control" id="newLabel" placeholder="new label">
+          </div>
+        </form>
+      </li> 
+    </ul>
+  </div>
+  <div class="col-md-4">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-4">
+            <h4>Notes</h4>
+          </div>
+          <div class="col-md-8">
+
+            <div class="dropdown floatRight">
+              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Options
+                <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#">Add label</a></li>
+                    <li><a href="#">Mola</a></li>
+                    <li><a href="#">Delete</a></li>
+                  </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+
+        <ul class="list-group">
+          <a href="#" class="list-group-item">A</a>
+          <a href="#" class="list-group-item">B</a>
+          <a href="#" class="list-group-item">C</a>
+        </ul>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-6 noteTable">
+
+    <div ng-app="myApp" ng-controller="formCtrl">
+      <form novalidate>
+        Subject:<br>
+        <input type="text" class="form-control" placeholder="Text input" ng-model="note.subject"><br>
+        Content:<br>
+        <textarea class="form-control" row="6" placeholder="Contents input" ng-model="note.content" ></textarea>
+        <br><br>
+        <button class="btn btn-default" ng-click="send()">Submit</button>
+      </form>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+var app = angular.module('myApp', []);
+app.controller('formCtrl', function($scope) {
+    $scope.send = function() {
+        /* send to note model */
+        
+    };
+    $scope.send();
+});
+</script>
+
+</body>
+</html>
+
+<style>
+
+textarea {
+    resize: none;
+    width: 180px;
+    height: 800px;
+}
+
+.appTitle {
+   margin-bottom: 50px;
+}
+
+.noteTable {
+   border: 1px solid gray;
+   padding: 20px;
+}
+
+.floatRight {
+  float: right;
+}
+
+</style>
