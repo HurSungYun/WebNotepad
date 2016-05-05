@@ -1,12 +1,13 @@
 <html>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-
+<head>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-<body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+</head>
+<body ng-app="webnotepad" ng-controller="notecontroller">
 
 <div class="row appTitle">
- <h1><center>WebNotepad</center></h1>
+ <h1><center>WebNotepad <p ng-init=" name='World' ">Hello {{name}}!</p></center></h1>
 </div>
 
 <div class="row">
@@ -14,10 +15,11 @@
     <ul class="list-group">
       <li class="list-group-item"><span class="badge">12</span>All</li>
       <li class="list-group-item"><span class="badge">5</span>Label1</li> 
-      <li class="list-group-item"><span class="badge">3</span>Label2</li>
+      <a href="#" class="list-group-item" ng-repeat="x in labels track by $index">{{x.name}}</a>
       <li class="list-group-item">
         <form class="form" id="newLabelForm">
           <input type="text" class="form-control" id="newLabel" placeholder="new label">
+          <br> <center><button class="btn btn-default" ng-click="newLabel()">Add</button></center>
         </form>
       </li> 
     </ul>
@@ -31,7 +33,7 @@
           <div class="col-md-8">
 
             <div class="dropdown floatRight">
-              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Options
+              <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Options
                 <span class="caret"></span></button>
                   <ul class="dropdown-menu">
                     <li><a href="#">Add label</a></li>
@@ -42,24 +44,23 @@
           </div>
         </div>
 
+      <div>
         <ul class="list-group">
-          <a href="#" class="list-group-item">A</a>
-          <a href="#" class="list-group-item">B</a>
-          <a href="#" class="list-group-item">C</a>
-        </ul>
-
+              <a href="#" class="list-group-item" ng-repeat="x in notes track by $index"><input type="checkbox" id="inlineCheckbox1" value="option1">{{x.subject}}<br>{{x.content}}</a>         
+        </ul> 
+      </div>
 
   </div>
   <div class="col-md-6 noteTable">
 
-    <div ng-app="myApp" ng-controller="formCtrl">
-      <form novalidate>
-        Subject:<br>
-        <input type="text" class="form-control" placeholder="Text input" ng-model="note.subject"><br>
-        Content:<br>
-        <textarea class="form-control" row="6" placeholder="Contents input" ng-model="note.content" ></textarea>
-        <br><br>
-        <button class="btn btn-default" ng-click="send()">Submit</button>
+    <div>
+      <form>
+       Subject:<br>
+       <input type="text" class="form-control" placeholder="Text input" ng-model="subject"><br>
+       Content:<br>
+       <textarea class="form-control" row="6" placeholder="Contents input" ng-model="content"></textarea>
+       <br><br>
+       <button class="btn btn-default" ng-click="newNote()">Submit</button>
       </form>
     </div>
 
@@ -68,14 +69,35 @@
 </div>
 
 <script>
-var app = angular.module('myApp', []);
-app.controller('formCtrl', function($scope) {
-    $scope.send = function() {
-        /* send to note model */
-        
-    };
-    $scope.send();
+var myApp = angular.module('webnotepad', []);
+
+myApp.controller('notecontroller',function($scope, $http) {
+	$scope.notes = null;
+        $scope.labels = null;
+
+        $http.get('/notes/read').then(function(response) {
+          $scope.notes = response.data;
+        });
+
+        $http.get('/labels/read').then(function(response) {
+          $scope.labels = response.data;
+        });
+
+        $scope.newNote = function() {
+          var dataObj = {
+				subject : $scope.subject,
+				content : $scope.content
+		}; 
+          var res = $http.post('/notes/create', dataObj);
+		res.success(function(data, status, headers, config) {
+			$scope.notes.push(data);
+		});
+		res.error(function(data, status, headers, config) {
+		});
+        };
+
 });
+
 </script>
 
 </body>

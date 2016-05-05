@@ -1,9 +1,26 @@
 class NotesController < ApplicationController
+require 'json'
 
-def new
+def create
+  @note = Note.new(subject: params[:subject])
+  @note.content = params[:content]
+  
+  if @note.save
+    render :json => { "subject": @note.subject, "content": @note.content, "eid": @note.id }
+  end
 end
 
-def modify
+def read
+  @notes = Note.all
+  @json = []
+  @notes.each do |note| 
+    @json << {subject: note.subject, content: note.content, eid: note.id}
+  end
+
+  render :json => @json.to_json
+end
+
+def update
 end
 
 def delete
