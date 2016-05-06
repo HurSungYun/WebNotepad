@@ -15,9 +15,18 @@ ActiveRecord::Schema.define(version: 20160505113644) do
 
   create_table "labels", force: :cascade do |t|
     t.string   "subject"
+    t.integer  "item"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  create_table "labels_notes", id: false, force: :cascade do |t|
+    t.integer "label_id"
+    t.integer "note_id"
+  end
+
+  add_index "labels_notes", ["label_id"], name: "index_labels_notes_on_label_id"
+  add_index "labels_notes", ["note_id"], name: "index_labels_notes_on_note_id"
 
   create_table "notes", force: :cascade do |t|
     t.string   "subject"

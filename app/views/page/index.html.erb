@@ -80,6 +80,14 @@ myApp.controller('notecontroller',function($scope, $http) {
         $scope.selectedLabel = 0;
         $scope.selectedLabel_Name = "All";
 
+        $http.get('/notes/read').then(function(response) {
+          $scope.notes = response.data;
+        });
+
+        $http.get('/labels/read').then(function(response) {
+          $scope.labels = response.data;
+        });
+
         $scope.changeLabel = function(pLabel) {
            $scope.selectedLabel = pLabel.eid;
            $scope.selectedLabel_Name = pLabel.name;
@@ -120,13 +128,6 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.editMode = false;
         };
 
-        $http.get('/notes/read').then(function(response) {
-          $scope.notes = response.data;
-        });
-
-        $http.get('/labels/read').then(function(response) {
-          $scope.labels = response.data;
-        });
 
         $scope.newNote = function() {
           var dataObj = {
