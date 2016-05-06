@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   get 'page/index' => 'index'
   post 'notes/create'
   post 'notes/update'
+  post 'notes/delete'
   get 'notes/read'
   get 'labels/read'
   post 'labels/create'

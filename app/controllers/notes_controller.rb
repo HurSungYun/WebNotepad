@@ -33,6 +33,11 @@ def update
 end
 
 def delete
+  @note = Note.find(params[:id])
+  temp = @note.id
+  if @note.destroy
+    render :json => {"eid": temp}
+  end
 end
 
 def add_label
