@@ -54,13 +54,13 @@
 
     <div>
       <form>
-<!--       <p ng-model="curr_eid"> Note Number: {{curr_eid}} </p>    --!>
        Subject: <br> <div ng-model="curr_eid"></div>
        <input type="text" class="form-control" placeholder="Text input" ng-model="subject"><br>
        Content:<br>
        <textarea class="form-control" row="6" placeholder="Contents input" ng-model="content"></textarea>
        <br><br>
-       <button class="btn btn-default" ng-click="newNote()">Submit</button>
+       <button class="btn btn-default" ng-click="editNote()" ng-show="editMode">Edit</button> <button class="btn btn-danger" ng-click="deleteNote()" ng-show="editMode">Delete</button>
+       <button class="btn btn-primary" ng-click="changeCreateMode()" ng-show="editMode">New Memo</button> <button class="btn btn-primary" ng-click="newNote()" ng-hide="editMode">Apply</button>
       </form>
     </div>
 
@@ -72,9 +72,20 @@
 var myApp = angular.module('webnotepad', []);
 
 myApp.controller('notecontroller',function($scope, $http) {
-	$scope.notes = null;
-        $scope.labels = null;
+	$scope.notes = [];
+        $scope.labels = [];
         $scope.curr_eid = null;
+        $scope.editMode = false;
+
+        $scope.selectedLabel = 0;
+        $scope.selectedLabel_
+
+
+        $scope.changeCreateMode = function() {
+          $scope.subject = "";
+          $scope.content = "";
+          $scope.editMode = false;
+        };
 
         $http.get('/notes/read').then(function(response) {
           $scope.notes = response.data;
@@ -92,6 +103,7 @@ myApp.controller('notecontroller',function($scope, $http) {
           var res = $http.post('/notes/create', dataObj);
 		res.success(function(data, status, headers, config) {
 			$scope.notes.push(data);
+                        $scope.editMode = true;
 		});
 		res.error(function(data, status, headers, config) {
 		});
@@ -101,6 +113,7 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.subject = pNote.subject;
           $scope.content = pNote.content;
           $scope.curr_eid = pNote.eid;
+          $scope.editMode = true;
         };
 
         $scope.editNote = function() {
@@ -112,13 +125,15 @@ myApp.controller('notecontroller',function($scope, $http) {
 
           var res = $http.post('/notes/update',dataObj);
                res.success(function(data, status, headers, config) {
-                  for(var temp in $scope.note){
-                     if ( temp.eid == data.eid ){
-                       temp.subject = data.subject;
-                       temp.content = data.content;
+                  var i;
+                  for(i=0; i< $scope.notes.length; i++){
+                     if ( $scope.notes[i].eid == data.eid ){
+                       $scope.notes[i].subject = data.subject;
+                       $scope.notes[i].content = data.content;
 
                        $scope.subject = data.subject;
                        $scope.content = data.content;
+                       
                        break;
                      }
                    }
@@ -127,21 +142,44 @@ myApp.controller('notecontroller',function($scope, $http) {
                });
         };
 
-     $scope.newLabel = function() {
-        var dataObj = {
-           name : $scope.newlabelname
-        }
+        $scope.deleteNote = function(pNote) {
+          var dataObj = {
+            id : $scope.curr_eid
+          };
 
-        var res = $http.post('labels/create',dataObj);
+          var res = $http.post('notes/delete',dataObj);
+          
+          res.success(function(data, status, headers, config) {
+             var i;
+               for(i=0; i< $scope.notes.length; i++){
+                  if ( $scope.notes[i].eid == data.eid ){
+                    $scope.notes.splice(i,1);
+                    $scope.changeCreateMode();
+                    break;
+                 }
+              }                   
+          });
+          res.error(function(data, status, headers, config) {
+          });
+
+        };
+
+
+        $scope.newLabel = function() {
+          var dataObj = {
+             name : $scope.newlabelname
+          }
+
+          var res = $http.post('labels/create',dataObj);
         
-        res.success(function(data, status, headers, config) {
-          $scope.labels.push(data);
-        });
+          res.success(function(data, status, headers, config) {
+            $scope.labels.push(data);
+          });
 
-        res.error(function(data, status, headers, config) {
-        }); 
-     };
-
+          res.error(function(data, status, headers, config) {
+          }); 
+       };
+ 
 });
 
 </script>
