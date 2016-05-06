@@ -30,7 +30,7 @@
             <h4 ng-bind="selectedLabel_Name"></h4>
           </div>
           <div class="col-md-8">
-            <button class="btn btn-primary" ng-click="deleteLabel()">Delete Label</button>
+            <button class="btn btn-primary" ng-click="deleteLabel()" ng-show="selectedLabel">Delete Label</button>
             <div class="dropdown floatRight">
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Options
                 <span class="caret"></span></button>
