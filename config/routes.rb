@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   get 'page/index' => 'index'
   post 'notes/create'
+  post 'notes/update'
   get 'notes/read'
   get 'labels/read'
+  post 'labels/create'
   root 'page#index'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

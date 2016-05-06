@@ -21,6 +21,15 @@ def read
 end
 
 def update
+  @note = Note.find(params[:id])
+
+  @note.subject = params[:subject]
+  @note.content = params[:content]
+  
+  if @note.save
+    render :json => { "subject": @note.subject, "content": @note.content, "eid": @note.id }
+  end
+
 end
 
 def delete

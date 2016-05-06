@@ -14,11 +14,10 @@
   <div class="col-md-2">
     <ul class="list-group">
       <li class="list-group-item"><span class="badge">12</span>All</li>
-      <li class="list-group-item"><span class="badge">5</span>Label1</li> 
-      <a href="#" class="list-group-item" ng-repeat="x in labels track by $index">{{x.name}}</a>
+      <a href="#" class="list-group-item" ng-repeat="x in labels track by $index"><span class="badge">5</span>{{x.name}}</a>
       <li class="list-group-item">
         <form class="form" id="newLabelForm">
-          <input type="text" class="form-control" id="newLabel" placeholder="new label">
+          <input type="text" class="form-control" id="newLabel" placeholder="new label" ng-model="newlabelname">
           <br> <center><button class="btn btn-default" ng-click="newLabel()">Add</button></center>
         </form>
       </li> 
@@ -46,7 +45,7 @@
 
       <div>
         <ul class="list-group">
-              <a href="#" class="list-group-item" ng-repeat="x in notes track by $index"><input type="checkbox" id="inlineCheckbox1" value="option1">{{x.subject}}<br>{{x.content}}</a>         
+              <li class="list-group-item" ng-repeat="x in notes track by $index" ng-click="showNote(x)"><input type="checkbox" id="inlineCheckbox1" value="option1">{{x.subject}}<br>{{x.content}}</li>
         </ul> 
       </div>
 
@@ -55,7 +54,8 @@
 
     <div>
       <form>
-       Subject:<br>
+<!--       <p ng-model="curr_eid"> Note Number: {{curr_eid}} </p>    --!>
+       Subject: <br> <div ng-model="curr_eid"></div>
        <input type="text" class="form-control" placeholder="Text input" ng-model="subject"><br>
        Content:<br>
        <textarea class="form-control" row="6" placeholder="Contents input" ng-model="content"></textarea>
@@ -74,6 +74,7 @@ var myApp = angular.module('webnotepad', []);
 myApp.controller('notecontroller',function($scope, $http) {
 	$scope.notes = null;
         $scope.labels = null;
+        $scope.curr_eid = null;
 
         $http.get('/notes/read').then(function(response) {
           $scope.notes = response.data;
@@ -95,6 +96,51 @@ myApp.controller('notecontroller',function($scope, $http) {
 		res.error(function(data, status, headers, config) {
 		});
         };
+
+        $scope.showNote = function(pNote) {
+          $scope.subject = pNote.subject;
+          $scope.content = pNote.content;
+          $scope.curr_eid = pNote.eid;
+        };
+
+        $scope.editNote = function() {
+          var dataObj = {
+              id : $scope.curr_eid,
+              subject : $scope.subject,
+              content : $scope.content,
+          };
+
+          var res = $http.post('/notes/update',dataObj);
+               res.success(function(data, status, headers, config) {
+                  for(var temp in $scope.note){
+                     if ( temp.eid == data.eid ){
+                       temp.subject = data.subject;
+                       temp.content = data.content;
+
+                       $scope.subject = data.subject;
+                       $scope.content = data.content;
+                       break;
+                     }
+                   }
+               });
+               res.error(function(data, status, headers, config) {
+               });
+        };
+
+     $scope.newLabel = function() {
+        var dataObj = {
+           name : $scope.newlabelname
+        }
+
+        var res = $http.post('labels/create',dataObj);
+        
+        res.success(function(data, status, headers, config) {
+          $scope.labels.push(data);
+        });
+
+        res.error(function(data, status, headers, config) {
+        }); 
+     };
 
 });
 
