@@ -20,5 +20,12 @@ def read
   render :json => @json.to_json
 end
 
+def delete
+  @label = Label.find(params[:id])
+  temp = @label.id
+  if @label.destroy
+    render :json => {"eid": temp}
+  end
+end
 
 end

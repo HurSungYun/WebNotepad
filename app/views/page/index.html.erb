@@ -13,8 +13,8 @@
 <div class="row">
   <div class="col-md-2">
     <ul class="list-group">
-      <li class="list-group-item"><span class="badge">12</span>All</li>
-      <a href="#" class="list-group-item" ng-repeat="x in labels track by $index"><span class="badge">5</span>{{x.name}}</a>
+      <li class="list-group-item" ng-click="initLabel()"><span class="badge">12</span>All</li>
+      <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="changeLabel(x)"><span class="badge">5</span>{{x.name}}</li>
       <li class="list-group-item">
         <form class="form" id="newLabelForm">
           <input type="text" class="form-control" id="newLabel" placeholder="new label" ng-model="newlabelname">
@@ -27,10 +27,10 @@
 
         <div class="row">
           <div class="col-md-4">
-            <h4>Notes</h4>
+            <h4 ng-bind="selectedLabel_Name"></h4>
           </div>
           <div class="col-md-8">
-
+            <button class="btn btn-primary" ng-click="deleteLabel()">Delete Label</button>
             <div class="dropdown floatRight">
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Options
                 <span class="caret"></span></button>
@@ -78,8 +78,41 @@ myApp.controller('notecontroller',function($scope, $http) {
         $scope.editMode = false;
 
         $scope.selectedLabel = 0;
-        $scope.selectedLabel_
+        $scope.selectedLabel_Name = "All";
 
+        $scope.changeLabel = function(pLabel) {
+           $scope.selectedLabel = pLabel.eid;
+           $scope.selectedLabel_Name = pLabel.name;
+        };
+
+        $scope.initLabel = function() {
+           $scope.selectedLabel = 0;
+           $scope.selectedLabel_Name = "ALL";
+           $scope.newlabelname = "";
+        };
+
+        $scope.deleteLabel = function() {
+            var dataObj = {
+             id : $scope.selectedLabel
+          }
+
+          var res = $http.post('/labels/delete',dataObj);
+
+          res.success(function(data, status, headers, config) {
+            var i;
+               for(i = 0; i< $scope.labels.length; i++){
+                  if ( $scope.labels[i].eid == data.eid ){
+                    $scope.labels.splice(i,1);
+                    $scope.initLabel();
+                    break;
+                 }
+              }
+          });
+
+          res.error(function(data, status, headers, config) {
+          });
+
+        };
 
         $scope.changeCreateMode = function() {
           $scope.subject = "";
@@ -104,6 +137,7 @@ myApp.controller('notecontroller',function($scope, $http) {
 		res.success(function(data, status, headers, config) {
 			$scope.notes.push(data);
                         $scope.editMode = true;
+                        $scope.curr_eid = data.eid;
 		});
 		res.error(function(data, status, headers, config) {
 		});
@@ -174,6 +208,8 @@ myApp.controller('notecontroller',function($scope, $http) {
         
           res.success(function(data, status, headers, config) {
             $scope.labels.push(data);
+            $scope.changeLabel(data);
+            $scope.newlabelname = "";
           });
 
           res.error(function(data, status, headers, config) {
