@@ -6,7 +6,7 @@ def create
   @note.content = params[:content]
   
   if @note.save
-    render :json => { "subject": @note.subject, "content": @note.content, "eid": @note.id }
+    render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.updated_at, eid: @note.id }
   end
 end
 
@@ -14,7 +14,7 @@ def read
   @notes = Note.all
   @json = []
   @notes.each do |note| 
-    @json << {subject: note.subject, content: note.content, eid: note.id}
+    @json << {subject: note.subject, content: note.content, updatedAt: note.updated_at, eid: note.id}
   end
 
   render :json => @json.to_json
@@ -27,7 +27,7 @@ def update
   @note.content = params[:content]
   
   if @note.save
-    render :json => { "subject": @note.subject, "content": @note.content, "eid": @note.id }
+    render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.updated_at, eid: @note.id }
   end
 
 end
@@ -36,7 +36,7 @@ def delete
   @note = Note.find(params[:id])
   temp = @note.id
   if @note.destroy
-    render :json => {"eid": temp}
+    render :json => {eid: temp}
   end
 end
 

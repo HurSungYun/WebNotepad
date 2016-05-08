@@ -65,7 +65,7 @@
        <input type="text" class="form-control" placeholder="Text input" ng-model="subject"><br>
        Content:<br>
        <textarea class="form-control" row="6" placeholder="Contents input" ng-model="content"></textarea>
-       <br><br>
+       <p ng-model="updatedAt" ng-show="editMode">Last Updated: {{updatedAt}}</p><br>
        <button class="btn btn-default" ng-click="editNote()" ng-show="editMode">Edit</button> <button class="btn btn-danger" ng-click="deleteNote()" ng-show="editMode">Delete</button>
        <button class="btn btn-primary" ng-click="changeCreateMode()" ng-show="editMode">New Memo</button> <button class="btn btn-primary" ng-click="newNote()" ng-hide="editMode">Apply</button>
       </form>
@@ -81,6 +81,8 @@ var myApp = angular.module('webnotepad', []);
 myApp.controller('notecontroller',function($scope, $http) {
 
 // initialize variables
+
+        $scope.updatedAt = null;
 
 	$scope.notes = [];
         $scope.notesNumber = 0;
@@ -251,6 +253,7 @@ myApp.controller('notecontroller',function($scope, $http) {
         $scope.changeCreateMode = function() {
           $scope.subject = "";
           $scope.content = "";
+          $scope.updatedAt = null;
           $scope.editMode = false;
         };
 
@@ -274,6 +277,7 @@ myApp.controller('notecontroller',function($scope, $http) {
         $scope.showNote = function(pNote) {
           $scope.subject = pNote.subject;
           $scope.content = pNote.content;
+          $scope.updatedAt = pNote.updatedAt;
           $scope.curr_eid = pNote.eid;
           $scope.editMode = true;
         };
@@ -295,6 +299,7 @@ myApp.controller('notecontroller',function($scope, $http) {
 
                        $scope.subject = data.subject;
                        $scope.content = data.content;
+                       $scope.updatedAt = data.updatedAt;
                        
                        break;
                      }
