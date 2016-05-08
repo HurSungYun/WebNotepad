@@ -7,7 +7,7 @@
 <body ng-app="webnotepad" ng-controller="notecontroller">
 
 <div class="row appTitle">
- <h1><center>WebNotepad {{checkedStatus}}<p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
+ <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
 </div>
 
 <div class="row">
@@ -52,7 +52,7 @@
 
       <div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-checked="checkedStatus" ng-click="checkNote(x)">{{x.subject}}<br>{{x.content}}</li>
+              <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">{{x.subject}}<br>{{x.content}}</li>
         </ul> 
       </div>
 
@@ -94,9 +94,6 @@ myApp.controller('notecontroller',function($scope, $http) {
         $scope.selectedLabel = 0;
         $scope.selectedLabel_Name = "All";
 
-        $scope.checkList = [];
-        $scope.checkedStatus = false;
-
         $http.get('/notes/read').then(function(response) {
           $scope.notes = response.data;
           $scope.showingNotes = $scope.notes;
@@ -129,6 +126,12 @@ myApp.controller('notecontroller',function($scope, $http) {
             $scope.checkList.splice(idx,1);
         };
 
+        $scope.uncheckAll = function() {
+            angular.forEach($scope.showingNotes, function (pNote) {
+              pNote.selected = false;
+            });
+        };
+
 
 //From here, handle Labels
 
@@ -149,15 +152,14 @@ myApp.controller('notecontroller',function($scope, $http) {
         };
 
         $scope.changeLabel = function(pLabel) {
-           $scope.checkedStatus = false;
+           $scope.uncheckAll();
            $scope.selectedLabel = pLabel.eid;
            $scope.selectedLabel_Name = pLabel.name;
            $scope.getNotesFromLabel();
-           $scope.checkList = [];
         };
 
         $scope.initLabel = function() {
-           $scope.checkedStatus = false;
+           $scope.uncheckAll();
            $scope.selectedLabel = 0;
            $scope.selectedLabel_Name = "All";
            $scope.newlabelname = "";
