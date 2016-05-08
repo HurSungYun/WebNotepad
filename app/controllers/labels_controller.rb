@@ -6,7 +6,7 @@ def create
   @label.item = 0
 
   if @label.save
-    render :json => { "name": @label.subject, "eid": @label.id }
+    render :json => { "name": @label.subject, "item": @label.item, "eid": @label.id }
   end
 end
 

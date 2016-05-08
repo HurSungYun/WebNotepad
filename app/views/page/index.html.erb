@@ -7,14 +7,14 @@
 <body ng-app="webnotepad" ng-controller="notecontroller">
 
 <div class="row appTitle">
- <h1><center>WebNotepad <p ng-init=" name='World' ">Hello {{name}}!</p></center></h1>
+ <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
 </div>
 
 <div class="row">
   <div class="col-md-2">
     <ul class="list-group">
-      <li class="list-group-item" ng-click="initLabel()"><span class="badge">12</span>All</li>
-      <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="changeLabel(x)"><span class="badge">5</span>{{x.name}}</li>
+      <li class="list-group-item" ng-click="initLabel()"><span class="badge">{{notesNumber}}</span>All</li>
+      <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="changeLabel(x)"><span class="badge">{{x.item}}</span>{{x.name}}</li>
       <li class="list-group-item">
         <form class="form" id="newLabelForm">
           <input type="text" class="form-control" id="newLabel" placeholder="new label" ng-model="newlabelname">
@@ -35,7 +35,7 @@
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Options
                 <span class="caret"></span></button>
                   <ul class="dropdown-menu">
-                    <li><a href="#">Add label</a></li>
+                    <li><a href="#" ng-click="addItem">Add label</a></li>
                     <li><a href="#">Mola</a></li>
                     <li><a href="#">Delete</a></li>
                   </ul>
@@ -45,7 +45,7 @@
 
       <div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in notes track by $index" ng-click="showNote(x)"><input type="checkbox" id="inlineCheckbox1" value="option1">{{x.subject}}<br>{{x.content}}</li>
+              <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)">{{x.subject}}<br>{{x.content}}</li>
         </ul> 
       </div>
 
@@ -72,31 +72,67 @@
 var myApp = angular.module('webnotepad', []);
 
 myApp.controller('notecontroller',function($scope, $http) {
+
+// initialize variables
+
 	$scope.notes = [];
+        $scope.notesNumber = 0;
         $scope.labels = [];
         $scope.curr_eid = null;
         $scope.editMode = false;
+        $scope.showingNotes = [];
 
         $scope.selectedLabel = 0;
         $scope.selectedLabel_Name = "All";
 
+        $scope.checkList = [];
+
         $http.get('/notes/read').then(function(response) {
           $scope.notes = response.data;
+          $scope.showingNotes = $scope.notes;
+          $scope.notesNumber = $scope.notes.length;
         });
 
         $http.get('/labels/read').then(function(response) {
           $scope.labels = response.data;
         });
 
+
+//From here, handle checklist
+
+        $scope.checkNote = function(pNote) {
+          var i, flag = false;
+          for(i = 0; i < $scope.checkList.length; i++) {
+             if($scope.checkList[i] == pNote.eid) {
+               flag = true;
+               break;
+             }
+          }
+          if(flag == true) {
+            $scope.uncheckNote(i);
+          } else {
+            $scope.checkList.push(pNote.eid);
+          }
+        };
+
+        $scope.uncheckNote = function(idx) { 
+            $scope.checkList.splice(idx,1);
+        };
+
+
+//From here, handle Labels
+
         $scope.changeLabel = function(pLabel) {
            $scope.selectedLabel = pLabel.eid;
            $scope.selectedLabel_Name = pLabel.name;
+           $scope.showingNotes = [];
         };
 
         $scope.initLabel = function() {
            $scope.selectedLabel = 0;
            $scope.selectedLabel_Name = "ALL";
            $scope.newlabelname = "";
+           $scope.showingNotes = $scope.notes;
         };
 
         $scope.deleteLabel = function() {
@@ -122,6 +158,46 @@ myApp.controller('notecontroller',function($scope, $http) {
 
         };
 
+        $scope.newLabel = function() {
+          var dataObj = {
+             name : $scope.newlabelname
+          }
+
+          var res = $http.post('labels/create',dataObj);
+        
+          res.success(function(data, status, headers, config) {
+            $scope.labels.push(data);
+            $scope.changeLabel(data);
+            $scope.newlabelname = "";
+          });
+
+          res.error(function(data, status, headers, config) {
+          }); 
+       };
+
+       $scope.addItem = function() {
+          var dataObj = {
+            id : $scope.curr_eid
+          }
+
+          var res = $http.post('/labels/addItem', dataObj);
+
+          res.success(function(data, status, headers, config) {
+            var i;
+            for (i = 0; i < $scope.labels.length; i++){
+              if ($scope.labels[i].eid == data.eid) {
+                
+              } 
+            }
+          });
+
+          res.error(function(data, status, headers, config) {
+
+          });
+       };
+
+// From here, handle Notes
+
         $scope.changeCreateMode = function() {
           $scope.subject = "";
           $scope.content = "";
@@ -139,6 +215,7 @@ myApp.controller('notecontroller',function($scope, $http) {
 			$scope.notes.push(data);
                         $scope.editMode = true;
                         $scope.curr_eid = data.eid;
+                        $scope.notesNumber = $scope.notesNumber + 1;
 		});
 		res.error(function(data, status, headers, config) {
 		});
@@ -190,6 +267,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                   if ( $scope.notes[i].eid == data.eid ){
                     $scope.notes.splice(i,1);
                     $scope.changeCreateMode();
+                    $scope.notesNumber = $scope.notesNumber - 1;
                     break;
                  }
               }                   
@@ -199,23 +277,6 @@ myApp.controller('notecontroller',function($scope, $http) {
 
         };
 
-
-        $scope.newLabel = function() {
-          var dataObj = {
-             name : $scope.newlabelname
-          }
-
-          var res = $http.post('labels/create',dataObj);
-        
-          res.success(function(data, status, headers, config) {
-            $scope.labels.push(data);
-            $scope.changeLabel(data);
-            $scope.newlabelname = "";
-          });
-
-          res.error(function(data, status, headers, config) {
-          }); 
-       };
  
 });
 
