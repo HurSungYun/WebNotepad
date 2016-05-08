@@ -25,8 +25,10 @@ def show
   @label = Label.find(params[:id])
   @json = []
   @label.notes.each do |note|
-    @json << {subject: note.subject, content: note.content, eid: note.eid}
+    @json << {subject: note.subject, content: note.content, eid: note.id}
   end
+
+  render :json => @json.to_json
 end
 
 
@@ -44,7 +46,7 @@ def tagLabel
   
   params[:list].each do |note_id|
     pNote = Note.find(note_id)
-    if @label.notes.find(note_id) == nil
+    if @label.notes.where(id: note_id) != nil
       @label.notes = @label.notes.push(pNote)
       temp = temp + 1
     end
@@ -58,7 +60,22 @@ def tagLabel
 end
 
 def untagLabel
+  @label = Label.find(params[:id])
+  temp = @label.item
 
+  params[:list].each do |note_id|
+    pNote = Note.find(note_id)
+    if @label.notes.where(id: note_id) != nil
+      @label.notes.delete(pNote)
+      temp = temp - 1
+    end
+  end
+
+  @label.item = temp
+
+  if @label.save
+    render :json => {item: temp, eid: @label.id}
+  end
 end
 
 end

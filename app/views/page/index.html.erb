@@ -7,7 +7,7 @@
 <body ng-app="webnotepad" ng-controller="notecontroller">
 
 <div class="row appTitle">
- <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
+ <h1><center>WebNotepad {{checkedStatus}}<p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
 </div>
 
 <div class="row">
@@ -52,7 +52,7 @@
 
       <div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)">{{x.subject}}<br>{{x.content}}</li>
+              <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-checked="checkedStatus" ng-click="checkNote(x)">{{x.subject}}<br>{{x.content}}</li>
         </ul> 
       </div>
 
@@ -93,6 +93,7 @@ myApp.controller('notecontroller',function($scope, $http) {
         $scope.selectedLabel_Name = "All";
 
         $scope.checkList = [];
+        $scope.checkedStatus = false;
 
         $http.get('/notes/read').then(function(response) {
           $scope.notes = response.data;
@@ -129,14 +130,32 @@ myApp.controller('notecontroller',function($scope, $http) {
 
 //From here, handle Labels
 
+        $scope.getNotesFromLabel = function() {
+          var dataObj = {
+             id : $scope.selectedLabel
+          };
+
+          var res = $http.post('/labels/show',dataObj);
+
+          res.success(function(data, status, headers, config) {
+            $scope.showingNotes = data;
+          });
+
+          res.error(function(data, status, headers, config) {
+          });
+
+        };
+
         $scope.changeLabel = function(pLabel) {
+           $scope.checkedStatus = false;
            $scope.selectedLabel = pLabel.eid;
            $scope.selectedLabel_Name = pLabel.name;
-           $scope.showingNotes = [];
+           $scope.getNotesFromLabel();
            $scope.checkList = [];
         };
 
         $scope.initLabel = function() {
+           $scope.checkedStatus = false;
            $scope.selectedLabel = 0;
            $scope.selectedLabel_Name = "All";
            $scope.newlabelname = "";
@@ -196,7 +215,7 @@ myApp.controller('notecontroller',function($scope, $http) {
             for (i = 0; i < $scope.labels.length; i++){
               if ($scope.labels[i].eid == data.eid) {
                 $scope.labels[i].item = data.item;
-                // add showlist
+                $scope.checkList = [];
                 break;
               } 
             }
@@ -205,6 +224,26 @@ myApp.controller('notecontroller',function($scope, $http) {
           res.error(function(data, status, headers, config) {
 
           });
+       };
+
+       $scope.untagLabel = function() {
+         var dataObj = {
+           list : $scope.checkList,
+           id : $scope.selectedLabel
+         }
+
+         var res = $http.post('/labels/untagLabel', dataObj);
+         res.success(function(data, status, headers, config) {
+            var i;
+            for (i = 0; i < $scope.labels.length; i++){
+              if ($scope.labels[i].eid == data.eid) {
+                $scope.labels[i].item = data.item;
+                $scope.getNotesFromLabel();
+                $scope.checkList = [];
+                break;
+              }
+            }
+         });
        };
 
 // From here, handle Notes
