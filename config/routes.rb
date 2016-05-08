@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   get 'labels/read'
   post 'labels/create'
   post 'labels/delete'
+  post 'labels/show'
+  post 'labels/tagLabel'
+  post 'labels/untagLabel'
   root 'page#index'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

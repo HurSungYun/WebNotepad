@@ -26,19 +26,26 @@
   <div class="col-md-4">
 
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-5">
             <h4 ng-bind="selectedLabel_Name"></h4>
           </div>
-          <div class="col-md-8">
-            <button class="btn btn-primary" ng-click="deleteLabel()" ng-show="selectedLabel">Delete Label</button>
-            <div class="dropdown floatRight">
-              <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Options
-                <span class="caret"></span></button>
-                  <ul class="dropdown-menu">
-                    <li><a href="#" ng-click="addItem">Add label</a></li>
-                    <li><a href="#">Mola</a></li>
-                    <li><a href="#">Delete</a></li>
-                  </ul>
+          <div class="col-md-7">
+            <div class="row">
+              <div class="col-md-6">
+                <button class="btn btn-danger" ng-click="deleteLabel()" ng-show="selectedLabel">Delete Label</button>
+              </div>
+              <div class="col-md-3">
+                <div class="dropdown">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tag
+                    <span class="caret"></span></button>
+                      <ul class="dropdown-menu list-group">
+                        <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="tagLabel(x)">{{x.name}}</li>
+                      </ul>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-default" ng-click="untagLabel()">Untag</button>
+              </div>
             </div>
           </div>
         </div>
@@ -126,11 +133,12 @@ myApp.controller('notecontroller',function($scope, $http) {
            $scope.selectedLabel = pLabel.eid;
            $scope.selectedLabel_Name = pLabel.name;
            $scope.showingNotes = [];
+           $scope.checkList = [];
         };
 
         $scope.initLabel = function() {
            $scope.selectedLabel = 0;
-           $scope.selectedLabel_Name = "ALL";
+           $scope.selectedLabel_Name = "All";
            $scope.newlabelname = "";
            $scope.showingNotes = $scope.notes;
         };
@@ -175,18 +183,21 @@ myApp.controller('notecontroller',function($scope, $http) {
           }); 
        };
 
-       $scope.addItem = function() {
+       $scope.tagLabel = function(pLabel) {
           var dataObj = {
-            id : $scope.curr_eid
+            list : $scope.checkList,
+            id : pLabel.eid
           }
 
-          var res = $http.post('/labels/addItem', dataObj);
+          var res = $http.post('/labels/tagLabel', dataObj);
 
           res.success(function(data, status, headers, config) {
             var i;
             for (i = 0; i < $scope.labels.length; i++){
               if ($scope.labels[i].eid == data.eid) {
-                
+                $scope.labels[i].item = data.item;
+                // add showlist
+                break;
               } 
             }
           });
