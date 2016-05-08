@@ -44,8 +44,10 @@ def tagLabel
   
   params[:list].each do |note_id|
     pNote = Note.find(note_id)
-    @label.notes = @label.notes.push(pNote)
-    temp = temp + 1
+    if @label.notes.find(note_id) == nil
+      @label.notes = @label.notes.push(pNote)
+      temp = temp + 1
+    end
   end
 
   @label.item = temp
