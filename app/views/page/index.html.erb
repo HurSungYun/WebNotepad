@@ -44,7 +44,7 @@
                 </div>
               </div>
               <div class="col-md-3">
-                <button class="btn btn-default" ng-click="untagLabel()">Untag</button>
+                <button class="btn btn-default" ng-click="untagLabel()" ng-show="selectedLabel">Untag</button>
               </div>
             </div>
           </div>
@@ -52,7 +52,8 @@
 
       <div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">{{x.subject}}<br>{{x.content}}</li>
+              <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">{{x.subject}}<br>{{x.content}}</li> 
+              <li class="list-group-item" ng-show="zeroNotes"> No note exist here. </li>
         </ul> 
       </div>
 
@@ -85,6 +86,7 @@ myApp.controller('notecontroller',function($scope, $http) {
         $scope.checkList = [];
         $scope.updatedAt = null;
 
+        $scope.zeroNotes = false;
 	$scope.notes = [];
         $scope.notesNumber = 0;
         $scope.labels = [];
@@ -145,10 +147,21 @@ myApp.controller('notecontroller',function($scope, $http) {
 
           res.success(function(data, status, headers, config) {
             $scope.showingNotes = data;
+            $scope.setZeroNotes();
           });
 
           res.error(function(data, status, headers, config) {
           });
+
+        };
+
+        $scope.setZeroNotes = function() {
+            console.log($scope.showingNotes);
+            if ($scope.showingNotes.length == 0) {
+               $scope.zeroNotes = true;
+            } else {
+               $scope.zeroNotes = false;
+            }
 
         };
 
@@ -157,6 +170,7 @@ myApp.controller('notecontroller',function($scope, $http) {
            $scope.selectedLabel = pLabel.eid;
            $scope.selectedLabel_Name = pLabel.name;
            $scope.getNotesFromLabel();
+           $scope.setZeroNotes();
         };
 
         $scope.initLabel = function() {
@@ -165,6 +179,7 @@ myApp.controller('notecontroller',function($scope, $http) {
            $scope.selectedLabel_Name = "All";
            $scope.newlabelname = "";
            $scope.showingNotes = $scope.notes;
+           $scope.setZeroNotes();
         };
 
         $scope.deleteLabel = function() {
