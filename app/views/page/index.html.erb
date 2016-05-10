@@ -101,6 +101,7 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.notes = response.data;
           $scope.showingNotes = $scope.notes;
           $scope.notesNumber = $scope.notes.length;
+          $scope.setZeroNotes();
         });
 
         $http.get('/labels/read').then(function(response) {
@@ -156,7 +157,6 @@ myApp.controller('notecontroller',function($scope, $http) {
         };
 
         $scope.setZeroNotes = function() {
-            console.log($scope.showingNotes);
             if ($scope.showingNotes.length == 0) {
                $scope.zeroNotes = true;
             } else {
@@ -287,6 +287,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                         $scope.editMode = true;
                         $scope.curr_eid = data.eid;
                         $scope.notesNumber = $scope.notesNumber + 1;
+                        $scope.setZeroNotes();
 		});
 		res.error(function(data, status, headers, config) {
 		});
@@ -341,6 +342,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                     $scope.notes.splice(i,1);
                     $scope.changeCreateMode();
                     $scope.notesNumber = $scope.notesNumber - 1;
+                    $scope.setZeroNotes();
                     break;
                  }
               }                   
