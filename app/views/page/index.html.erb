@@ -53,7 +53,7 @@
       <div>
         <ul class="list-group">
               <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">{{x.subject}}<br>{{x.content}}</li> 
-              <li class="list-group-item" ng-show="zeroNotes"> No note exist here. </li>
+              <li class="list-group-item" ng-hide="showingNotes.length"> No note exist here. </li>
         </ul> 
       </div>
 
@@ -106,7 +106,6 @@ myApp.controller('notecontroller',function($scope, $http) {
 
         $http.get('/labels/read').then(function(response) {
           $scope.labels = response.data;
-          console.log(response.data);
         });
 
 
@@ -161,11 +160,10 @@ myApp.controller('notecontroller',function($scope, $http) {
                  }
               }
            }
-           console.log($scope.showingNotes);
            $scope.setZeroNotes();
         };
 
-        $scope.setZeroNotes = function() {
+        $scope.setZeroNotes = function() {                 //duplicated
             if ($scope.showingNotes.length == 0) {
                $scope.zeroNotes = true;
             } else {
@@ -364,7 +362,7 @@ myApp.controller('notecontroller',function($scope, $http) {
           var res = $http.post('notes/delete',dataObj);
           
           res.success(function(data, status, headers, config) {
-             var i, j;
+             var i, j, pLabel;
              for(i = 0; i < $scope.notes.length; i++){            // update all
                 if( $scope.notes[i].eid == data.eid ){
                   $scope.notes.splice(i,1);
@@ -377,15 +375,18 @@ myApp.controller('notecontroller',function($scope, $http) {
              for(i = 0; i < $scope.labels.length; i++){          //update labels 
                 for(j = 0; j < $scope.labels[i].notes.length; j++){
                   if($scope.labels[i].notes[j].eid == data.eid){
+                    if($scope.labels[i].eid == $scope.selectedLabel){
+                      pLabel = $scope.labels[i];
+                    }
                     $scope.labels[i].notes.splice(j,1);
                     $scope.labels[i].item = $scope.labels[i].item - 1;
-                    
                   }
                 }
              }
-             $scope.setZeroNotes();
-             $scope.getNotesFromLabel($scope.selecetedLabel);
+             console.log(pLabel);
+             $scope.changeLabel(pLabel);
              $scope.checkList = [];
+             $scope.setZeroNotes();
           });
           res.error(function(data, status, headers, config) {
           });
