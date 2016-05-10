@@ -134,6 +134,7 @@ myApp.controller('notecontroller',function($scope, $http) {
             angular.forEach($scope.showingNotes, function (pNote) {
               pNote.selected = false;
             });
+            $scope.checkList = [];
         };
 
 //From here, handle Labels
@@ -234,13 +235,15 @@ myApp.controller('notecontroller',function($scope, $http) {
             id : pLabel.eid
           }
 
+          $scope.uncheckAll();
+
           var res = $http.post('/labels/tagLabel', dataObj);
 
           res.success(function(data, status, headers, config) {
             var i;
             for (i = 0; i < $scope.labels.length; i++){
               if ($scope.labels[i].eid == data.eid) {
-                $scope.labels[i].item = data.item;
+/*                $scope.labels[i].item = data.item;
                 //add notes id to list
                 for(j = 0; j < $scope.checkList.length; j++) {
                    var checkObj = {
@@ -250,6 +253,11 @@ myApp.controller('notecontroller',function($scope, $http) {
                 }
                 $scope.checkList = [];
                 break;
+*/
+                $scope.labels[i].item = data.item;
+                $scope.labels[i].notes = data.notes;
+                $scope.getNotesFromLabel($scope.labels[i].eid);
+                $scope.checkList = [];
               } 
             }
           });
@@ -265,6 +273,8 @@ myApp.controller('notecontroller',function($scope, $http) {
            id : $scope.selectedLabel
          }
 
+         $scope.uncheckAll();
+
          var res = $http.post('/labels/untagLabel', dataObj);
          res.success(function(data, status, headers, config) {
             var i, j;
@@ -272,6 +282,7 @@ myApp.controller('notecontroller',function($scope, $http) {
               if ($scope.labels[i].eid == data.eid) {
                 $scope.labels[i].item = data.item;
                 //delete notes id from list
+                $scope.labels[i].notes = data.notes;
                 $scope.getNotesFromLabel($scope.labels[i].eid);
                 $scope.checkList = [];
                 break;
