@@ -35,15 +35,21 @@ end
 def delete
   @note = Note.find(params[:id])
   temp = @note.id
+  
+  @labels = Label.all
+
+  @labels.each do |label|
+    if label.notes.find_by(id: temp) != nil
+      @pNote = Note.find(temp)
+      label.notes.delete(@pNote)
+      label.item = label.item - 1 
+      label.save
+    end
+  end
+
   if @note.destroy
     render :json => {eid: temp}
   end
-end
-
-def add_label
-end
-
-def remove_label
 end
 
 end

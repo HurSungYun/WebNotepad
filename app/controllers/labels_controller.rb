@@ -14,8 +14,8 @@ end
 def read
   @labels = Label.all
   @json = []
-  @note_json = []
   @labels.each do |label|
+    @note_json = []
     if label.notes != nil
       label.notes.each do |note|
         @note_json << { eid: note.id }
@@ -55,7 +55,7 @@ def tagLabel
   params[:list].each do |note_id|
     pNote = Note.find(note_id)
     if @label.notes.where(id: note_id) != nil
-      @label.notes = @label.notes.push(pNote)
+      @label.notes.push(pNote)
       temp = temp + 1
     end
   end

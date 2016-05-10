@@ -106,6 +106,7 @@ myApp.controller('notecontroller',function($scope, $http) {
 
         $http.get('/labels/read').then(function(response) {
           $scope.labels = response.data;
+          console.log(response.data);
         });
 
 
@@ -160,6 +161,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                  }
               }
            }
+           console.log($scope.showingNotes);
            $scope.setZeroNotes();
         };
 
@@ -257,6 +259,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                 $scope.labels[i].item = data.item;
                 $scope.labels[i].notes = data.notes;
                 $scope.getNotesFromLabel($scope.labels[i].eid);
+                $scope.changeLabel($scope.labels[i]);
                 $scope.checkList = [];
               } 
             }
@@ -361,16 +364,28 @@ myApp.controller('notecontroller',function($scope, $http) {
           var res = $http.post('notes/delete',dataObj);
           
           res.success(function(data, status, headers, config) {
-             var i;
-               for(i=0; i< $scope.notes.length; i++){
-                  if ( $scope.notes[i].eid == data.eid ){
-                    $scope.notes.splice(i,1);
-                    $scope.changeCreateMode();
-                    $scope.notesNumber = $scope.notesNumber - 1;
-                    $scope.setZeroNotes();
-                    break;
-                 }
-              }                   
+             var i, j;
+             for(i = 0; i < $scope.notes.length; i++){            // update all
+                if( $scope.notes[i].eid == data.eid ){
+                  $scope.notes.splice(i,1);
+                  $scope.changeCreateMode();
+                  $scope.notesNumber = $scope.notesNumber - 1;
+                  break;
+               }
+             }
+             
+             for(i = 0; i < $scope.labels.length; i++){          //update labels 
+                for(j = 0; j < $scope.labels[i].notes.length; j++){
+                  if($scope.labels[i].notes[j].eid == data.eid){
+                    $scope.labels[i].notes.splice(j,1);
+                    $scope.labels[i].item = $scope.labels[i].item - 1;
+                    
+                  }
+                }
+             }
+             $scope.setZeroNotes();
+             $scope.getNotesFromLabel($scope.selecetedLabel);
+             $scope.checkList = [];
           });
           res.error(function(data, status, headers, config) {
           });
@@ -398,7 +413,6 @@ textarea {
 }
 
 .noteTable {
-   border: 1px solid gray;
    padding: 20px;
 }
 
