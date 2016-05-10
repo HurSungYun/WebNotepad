@@ -6,7 +6,7 @@ def create
   @label.item = 0
 
   if @label.save
-    render :json => {name: @label.subject, item: @label.item, eid: @label.id }
+    render :json => {name: @label.subject, item: @label.item, eid: @label.id, notes: [] }
   end
 end
 
@@ -14,8 +14,16 @@ end
 def read
   @labels = Label.all
   @json = []
+  @note_json = []
   @labels.each do |label|
-    @json << {name: label.subject, item: label.item, eid: label.id}
+    if label.notes != nil
+      label.notes.each do |note|
+        @note_json << { eid: note.id }
+      end
+    else
+      @note_json << []
+    end
+    @json << {name: label.subject, item: label.item, eid: label.id, notes: @note_json}
   end
 
   render :json => @json.to_json

@@ -136,24 +136,30 @@ myApp.controller('notecontroller',function($scope, $http) {
             });
         };
 
-
 //From here, handle Labels
 
-        $scope.getNotesFromLabel = function() {
-          var dataObj = {
-             id : $scope.selectedLabel
-          };
+        $scope.makeShowingNotesEmpty = function() {
+           $scope.showingNotes = [];
+        };
 
-          var res = $http.post('/labels/show',dataObj);
-
-          res.success(function(data, status, headers, config) {
-            $scope.showingNotes = data;
-            $scope.setZeroNotes();
-          });
-
-          res.error(function(data, status, headers, config) {
-          });
-
+        $scope.getNotesFromLabel = function(label_eid) {
+           var i, j, cur_label;
+           $scope.makeShowingNotesEmpty();
+           for(i = 0; i < $scope.labels.length; i++) {
+             if($scope.labels[i].eid == label_eid){
+               cur_label = i;
+               break;
+             }
+           }
+           for(i = 0; i < $scope.labels[cur_label].notes.length; i++) {
+              for(j = 0; j < $scope.notes.length; j++) {
+                 if($scope.labels[cur_label].notes[i].eid == $scope.notes[j].eid) {
+                    $scope.showingNotes.push($scope.notes[j]);
+                    break;
+                 }
+              }
+           }
+           $scope.setZeroNotes();
         };
 
         $scope.setZeroNotes = function() {
@@ -169,7 +175,7 @@ myApp.controller('notecontroller',function($scope, $http) {
            $scope.uncheckAll();
            $scope.selectedLabel = pLabel.eid;
            $scope.selectedLabel_Name = pLabel.name;
-           $scope.getNotesFromLabel();
+           $scope.getNotesFromLabel(pLabel.eid);
            $scope.setZeroNotes();
         };
 
@@ -210,7 +216,7 @@ myApp.controller('notecontroller',function($scope, $http) {
              name : $scope.newlabelname
           }
 
-          var res = $http.post('labels/create',dataObj);
+          var res = $http.post('/labels/create',dataObj);
         
           res.success(function(data, status, headers, config) {
             $scope.labels.push(data);
@@ -235,6 +241,13 @@ myApp.controller('notecontroller',function($scope, $http) {
             for (i = 0; i < $scope.labels.length; i++){
               if ($scope.labels[i].eid == data.eid) {
                 $scope.labels[i].item = data.item;
+                //add notes id to list
+                for(j = 0; j < $scope.checkList.length; j++) {
+                   var checkObj = {
+                       eid : $scope.checkList[j]
+                   };
+                   $scope.labels[i].notes.push(checkObj);
+                }
                 $scope.checkList = [];
                 break;
               } 
@@ -254,11 +267,12 @@ myApp.controller('notecontroller',function($scope, $http) {
 
          var res = $http.post('/labels/untagLabel', dataObj);
          res.success(function(data, status, headers, config) {
-            var i;
+            var i, j;
             for (i = 0; i < $scope.labels.length; i++){
               if ($scope.labels[i].eid == data.eid) {
                 $scope.labels[i].item = data.item;
-                $scope.getNotesFromLabel();
+                //delete notes id from list
+                $scope.getNotesFromLabel($scope.labels[i].eid);
                 $scope.checkList = [];
                 break;
               }
