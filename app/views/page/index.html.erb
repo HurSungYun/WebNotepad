@@ -6,7 +6,7 @@
 </head>
 <body ng-app="webnotepad" ng-controller="notecontroller">
 
-<div class="row appTitle">
+<div class="row appTitle"  ng-init="initParameter('<%= @note %>', '<%= @label %>')" ng-model="params">
  <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
 </div>
 
@@ -86,7 +86,6 @@ myApp.controller('notecontroller',function($scope, $http) {
         $scope.checkList = [];
         $scope.updatedAt = null;
 
-        $scope.zeroNotes = false;
 	$scope.notes = [];
         $scope.notesNumber = 0;
         $scope.labels = [];
@@ -102,12 +101,73 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.showingNotes = $scope.notes;
           $scope.notesNumber = $scope.notes.length;
           $scope.setZeroNotes();
+          console.log($scope.params);
+          $scope.doParameter();
         });
 
         $http.get('/labels/read').then(function(response) {
           $scope.labels = response.data;
+          console.log($scope.params);
+          $scope.doParameter();
         });
 
+        $scope.doParameter = function() {
+
+          if($scope.params.note != null && $scope.params.note != 0){
+            var i;
+            for(i = 0; i < $scope.notes.length; i++) {
+              if($scope.params.note == $scope.notes[i].eid){
+                $scope.showNote($scope.notes[i]);
+                break;
+              }
+            }
+          }
+
+          if($scope.params.label != null && $scope.params.label != 0){
+            var i;
+            for(i = 0; i < $scope.labels.length; i++) {
+              if($scope.params.label == $scope.labels[i].eid){
+                $scope.selectedLabel = $scope.labels[i].eid;
+                $scope.selectedLabel_Name = $scope.labels[i].name;
+                $scope.getNotesFromLabel($scope.labels[i].eid);
+                break;
+              }
+            }
+          }
+        };
+
+	$scope.initParameter = function(note, label) {
+		$scope.params = { note : note, label : label };
+        ;
+
+//From here, history part
+
+        $scope.pushHistory =  function(pLabel,pNote) { 
+          var tLabel = { eid : 0 };
+          var tNote = {eid : 0 };
+
+          if(pLabel != null) {
+            tLabel = pLabel;
+            console.log("RUN");
+            if($scope.curr_eid != null) {
+              tNote.eid = $scope.curr_eid;
+            }
+          }
+
+          if(pNote != null) {
+            tNote = pNote;
+            if($scope.selectedLabel != null) {
+              tLabel.eid = $scope.selectedLabel;
+            }
+          }
+
+          var state = { selectedLabel: tLabel.eid },
+              title = "Page title",
+              path  = "/page/index?label=" + tLabel.eid + "&note=" + tNote.eid;
+          history.pushState(state, title, path);
+        };
+
+        
 
 //From here, handle checklist
 
@@ -178,6 +238,7 @@ myApp.controller('notecontroller',function($scope, $http) {
            $scope.selectedLabel_Name = pLabel.name;
            $scope.getNotesFromLabel(pLabel.eid);
            $scope.setZeroNotes();
+           $scope.pushHistory(pLabel,null);
         };
 
         $scope.initLabel = function() {
@@ -187,6 +248,7 @@ myApp.controller('notecontroller',function($scope, $http) {
            $scope.newlabelname = "";
            $scope.showingNotes = $scope.notes;
            $scope.setZeroNotes();
+           $scope.pushHistory({ eid : 0 }, null);
         };
 
         $scope.deleteLabel = function() {
@@ -243,17 +305,6 @@ myApp.controller('notecontroller',function($scope, $http) {
             var i;
             for (i = 0; i < $scope.labels.length; i++){
               if ($scope.labels[i].eid == data.eid) {
-/*                $scope.labels[i].item = data.item;
-                //add notes id to list
-                for(j = 0; j < $scope.checkList.length; j++) {
-                   var checkObj = {
-                       eid : $scope.checkList[j]
-                   };
-                   $scope.labels[i].notes.push(checkObj);
-                }
-                $scope.checkList = [];
-                break;
-*/
                 $scope.labels[i].item = data.item;
                 $scope.labels[i].notes = data.notes;
                 $scope.getNotesFromLabel($scope.labels[i].eid);
@@ -301,7 +352,6 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.editMode = false;
         };
 
-
         $scope.newNote = function() {
           var dataObj = {
 				subject : $scope.subject,
@@ -325,6 +375,7 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.updatedAt = pNote.updatedAt;
           $scope.curr_eid = pNote.eid;
           $scope.editMode = true;
+          $scope.pushHistory(null,pNote);
         };
 
         $scope.editNote = function() {
@@ -359,7 +410,7 @@ myApp.controller('notecontroller',function($scope, $http) {
             id : $scope.curr_eid
           };
 
-          var res = $http.post('notes/delete',dataObj);
+          var res = $http.post('/notes/delete',dataObj);
           
           res.success(function(data, status, headers, config) {
              var i, j, pLabel;

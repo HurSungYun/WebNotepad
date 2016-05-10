@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   post 'labels/tagLabel'
   post 'labels/untagLabel'
   root 'page#index'
+#  get 'page', to: 'page#render'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
