@@ -52,31 +52,32 @@ def tagLabel
   @label = Label.find(params[:id])
   temp = @label.item
   count = 0
+
+  if params[:list] != nil
   
-  params[:list].each do |note_id|
-    pNote = Note.find(note_id)
-    if @label.note_ids.index(note_id) == nil
-      @label.notes.push(pNote)
-      temp = temp + 1
-      count = count + 1
+    params[:list].each do |note_id|
+      pNote = Note.find(note_id)
+      if @label.note_ids.index(note_id) == nil
+        @label.notes.push(pNote)
+        temp = temp + 1
+        count = count + 1
+      end
     end
-  end
 
-  @note_json = []
-  @label.item = temp
+    @note_json = []
+    @label.item = temp
 
-  if @label.notes != nil
-    @label.notes.each do |note|
-      @note_json << { eid: note.id }
+    if @label.notes != nil
+      @label.notes.each do |note|
+        @note_json << { eid: note.id }
+      end
+    else
+      @note_json << []
     end
-  else
-    @note_json << []
-  end
 
-
-
-  if @label.save
-    render :json => {item: temp, eid: @label.id, notes: @note_json}
+    if @label.save
+      render :json => {item: temp, eid: @label.id, notes: @note_json}
+    end
   end
 end
 
@@ -85,27 +86,29 @@ def untagLabel
   
   temp = @label.item
 
-  params[:list].each do |note_id|
-    pNote = Note.find(note_id)
-    if @label.note_ids.index(note_id) != nil
-      @label.notes.delete(pNote)
-      temp = temp - 1
+  if params[:list] != nil
+    params[:list].each do |note_id|
+      pNote = Note.find(note_id)
+      if @label.note_ids.index(note_id) != nil
+        @label.notes.delete(pNote)
+        temp = temp - 1
+      end
     end
-  end
 
-  @note_json = []
-  @label.item = temp
+    @note_json = []
+    @label.item = temp
 
-  if @label.notes != nil
-    @label.notes.each do |note|
-      @note_json << { eid: note.id }
+    if @label.notes != nil
+      @label.notes.each do |note|
+        @note_json << { eid: note.id }
+      end
+    else
+      @note_json << []
     end
-  else
-    @note_json << []
-  end
   
-  if @label.save
-    render :json => {item: temp, eid: @label.id, notes: @note_json}
+    if @label.save
+      render :json => {item: temp, eid: @label.id, notes: @note_json}
+    end
   end
 end
 
