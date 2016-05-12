@@ -92,6 +92,7 @@ def untagLabel
       if @label.note_ids.index(note_id) != nil
         @label.notes.delete(pNote)
         temp = temp - 1
+        print "FUCK"
       end
     end
 

@@ -367,6 +367,7 @@ myApp.controller('notecontroller',function($scope, $http) {
 			$scope.notes.push(data);
                         $scope.editMode = true;
                         $scope.curr_eid = data.eid;
+                        $scope.updatedAt = data.updatedAt;
                         $scope.notesNumber = $scope.notesNumber + 1;
                         $scope.setZeroNotes();
 		});
