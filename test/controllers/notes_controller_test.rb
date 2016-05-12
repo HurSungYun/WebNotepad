@@ -12,8 +12,14 @@ class NotesControllerTest < ActionController::TestCase
   end
 
   test '#read_note' do
-    post :create, {'subject' => 'subject_read1', 'content' => 'content1'}
-    post :create, {'subject' => 'subject_read2', 'content' => 'content2'}
+    note1 = Note.new
+    note1.subject = 'subject_read1'
+    note1.content = 'content_read1'
+    note1.save
+    note2 = Note.new
+    note2.subject = 'subject_read2'
+    note2.content = 'content_read2'
+    note2.save
 
     get :read
     json = JSON.parse(response.body)
@@ -32,24 +38,26 @@ class NotesControllerTest < ActionController::TestCase
   end
 
   test '#update_note' do
-    post :create, {'subject' => 'subject3', 'content' => 'content3'}
-    json = JSON.parse(response.body)
-    note_id = json['eid']
+    note = Note.new
+    note.subject = 'subject3'
+    note.content = 'content3'
+    note.save
 
-    post :update, {'subject' => 'new_subject', 'content' => 'new_content', 'id' => note_id}
+    post :update, {'subject' => 'new_subject', 'content' => 'new_content', 'id' => note.id}
     json = JSON.parse(response.body)
-    assert note_id == json['eid']
+    assert note.id == json['eid']
     assert json['subject'] == 'new_subject'
   end
 
   test '#delete_note' do
-    post :create, {'subject' => 'subject3', 'content' => 'content3'}
-    json = JSON.parse(response.body)
-    note_id = json['eid']
+    note = Note.new
+    note.subject = 'subject3'
+    note.content = 'content3'
+    note.save
 
-    post :delete, {'id' => note_id }
+    post :delete, {'id' => note.id }
     json = JSON.parse(response.body)
-    assert note_id == json['eid']
+    assert note.id == json['eid']
   end
 
 end
