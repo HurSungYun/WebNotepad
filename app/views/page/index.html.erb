@@ -101,13 +101,11 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.showingNotes = $scope.notes;
           $scope.notesNumber = $scope.notes.length;
           $scope.setZeroNotes();
-          console.log($scope.params);
           $scope.doParameter();
         });
 
         $http.get('/labels/read').then(function(response) {
           $scope.labels = response.data;
-          console.log($scope.params);
           $scope.doParameter();
         });
 
@@ -148,7 +146,6 @@ myApp.controller('notecontroller',function($scope, $http) {
 
           if(pLabel != null) {
             tLabel = pLabel;
-            console.log("RUN");
             if($scope.curr_eid != null) {
               tNote.eid = $scope.curr_eid;
             }
@@ -350,6 +347,7 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.content = "";
           $scope.updatedAt = null;
           $scope.editMode = false;
+          $scope.curr_eid = null;
         };
 
         $scope.newNote = function() {
@@ -435,9 +433,12 @@ myApp.controller('notecontroller',function($scope, $http) {
                 }
              }
              console.log(pLabel);
-             $scope.changeLabel(pLabel);
+             if(pLabel != null)
+               $scope.changeLabel(pLabel);
              $scope.checkList = [];
              $scope.setZeroNotes();
+             $scope.curr_eid = null;
+             $scope.pushHistory(pLabel,{ eid: 0});
           });
           res.error(function(data, status, headers, config) {
           });
