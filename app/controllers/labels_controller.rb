@@ -51,12 +51,14 @@ end
 def tagLabel
   @label = Label.find(params[:id])
   temp = @label.item
+  count = 0
   
   params[:list].each do |note_id|
     pNote = Note.find(note_id)
-    if @label.notes.where(id: note_id) != nil
+    if @label.note_ids.index(note_id) == nil
       @label.notes.push(pNote)
       temp = temp + 1
+      count = count + 1
     end
   end
 
@@ -85,7 +87,7 @@ def untagLabel
 
   params[:list].each do |note_id|
     pNote = Note.find(note_id)
-    if @label.notes.where(id: note_id) != nil
+    if @label.note_ids.index(note_id) != nil
       @label.notes.delete(pNote)
       temp = temp - 1
     end
@@ -102,8 +104,6 @@ def untagLabel
     @note_json << []
   end
   
-
-
   if @label.save
     render :json => {item: temp, eid: @label.id, notes: @note_json}
   end
