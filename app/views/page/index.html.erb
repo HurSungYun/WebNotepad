@@ -7,6 +7,13 @@
 <body ng-app="webnotepad" ng-controller="notecontroller">
 
 <div class="row appTitle"  ng-init="initParameter('<%= @note %>', '<%= @label %>')" ng-model="params">
+
+<% if flash[:alert] != nil %>
+<div class="alert alert-warning alert-dismissible" id="AlertBox" role="alert" data-dismiss="alert">
+        <h4 id="AlertMessage"><%= flash[:alert] %></h4>
+</div>
+<% end %>
+
  <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
 </div>
 
