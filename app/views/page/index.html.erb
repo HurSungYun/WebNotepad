@@ -63,7 +63,7 @@
 
       <div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">Subject : {{x.subject}}<br>Content : {{x.content.substring(0,10)}} <br>{{x.updatedAt}}</li> 
+              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">Subject : {{x.subject}}<br>Content : {{x.content.substring(0,10)}}<i ng-hide="x.content.length < 10">...(more)</i> <br>{{x.updatedAt}}</li> 
               <li class="list-group-item" ng-hide="showingNotes.length"> No note exist here. </li>
         </ul> 
       </div>
@@ -72,13 +72,13 @@
   <div class="col-md-5 noteTable">
 
     <div>
-      <form>
+      <form> 
        Subject: <br> <div ng-model="curr_eid"></div>
-       <input type="text" class="form-control" placeholder="Text input" ng-model="subject"><br>
+       <input type="text" class="form-control" placeholder="Text input" ng-model="subject" ng-readonly="formReadonly" ng-click="formChangeEdit()"><br>
        Content:<br>
-       <textarea class="form-control" row="6" placeholder="Contents input" ng-model="content"></textarea>
+       <textarea class="form-control" row="6" placeholder="Contents input" ng-model="content" ng-readonly="formReadonly" ng-click="formChangeEdit()"></textarea>
        <p ng-model="updatedAt" ng-show="editMode">Last Updated: {{updatedAt}}</p><br>
-       <button class="btn btn-default" ng-click="editNote()" ng-show="editMode">Edit</button> <button class="btn btn-danger" ng-click="deleteNote()" ng-show="editMode">Delete</button>
+       <button class="btn btn-default" ng-click="editNote()" ng-show="editMode" ng-disabled="formReadonly">Edit</button> <button class="btn btn-danger" ng-click="deleteNote()" ng-show="editMode">Delete</button>
        <button class="btn btn-primary" ng-click="changeCreateMode()" ng-show="editMode">New Memo</button> <button class="btn btn-primary" ng-click="newNote()" ng-hide="editMode">Apply</button>
       </form>
     </div>
@@ -93,6 +93,8 @@ var myApp = angular.module('webnotepad', []);
 myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 
 // initialize variables
+
+        $scope.formReadonly = $scope.curr_eid == null ? false : true;
 
         $scope.checkList = [];
         $scope.updatedAt = null;
@@ -148,6 +150,16 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 
 	$scope.initParameter = function(note, label) {
 		$scope.params = { note : note, label : label };
+        };
+
+//From here, change read/edit mode
+
+        $scope.formChangeEdit = function() {
+           $scope.formReadonly = false;
+        };
+
+        $scope.formChangeRead = function() {
+           $scope.formReadonly = true;
         };
 
 //From here, history part
@@ -394,6 +406,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           $scope.editMode = false;
           $scope.curr_eid = null;
           $scope.alertMsg = "";
+          $scope.formChangeEdit();
         };
 
         $scope.newNote = function() {
@@ -409,6 +422,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
                         $scope.updatedAt = data.updatedAt;
                         $scope.notesNumber = $scope.notesNumber + 1;
                         $scope.alertMsg = "note is created successfully"
+                        $scope.formChangeRead();
 		});
 		res.error(function(data, status, headers, config) {
 		});
@@ -421,6 +435,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           $scope.curr_eid = pNote.eid;
           $scope.editMode = true;
           $scope.alertMsg = "";
+          $scope.formChangeRead();
           $scope.pushHistory(null,pNote);
         };
 
@@ -447,6 +462,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
                      }
                    }
                    $scope.alertMsg = "note is updated succesfully";
+                   $scope.formChangeRead();
                });
                res.error(function(data, status, headers, config) {
                });
@@ -492,6 +508,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
              $scope.checkList = [];
              $scope.curr_eid = null;
              $scope.alertMsg = "note is deleted succesfully";
+             $scope.formChangeEdit();
              $scope.pushHistory(pLabel,{ eid: 0});
           });
           res.error(function(data, status, headers, config) {
@@ -534,6 +551,10 @@ textarea {
 .labelBold {
   font-weight: bold;
   text-decoration: underline;
+}
+
+.formDisabled {
+  
 }
 
 #newLabelForm {
