@@ -25,28 +25,37 @@
       </li> 
     </ul>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-5">
 
         <div class="row">
-          <div class="col-md-5">
+          <div class="col-md-4">
             <h4 ng-bind="selectedLabel_Name"></h4>
           </div>
-          <div class="col-md-7">
+          <div class="col-md-8">
             <div class="row">
-              <div class="col-md-6">
-                <button class="btn btn-danger" ng-click="deleteLabel()" ng-show="selectedLabel">Delete Label</button>
+              <div class="col-md-4">
+                <button class="btn btn-warning smallText dropdown-toggle" ng-show="selectedLabel" type="button" data-toggle="dropdown">Label
+                  <span class="caret"></span></button>
+                      <ul class="dropdown-menu list-group">
+                        <li class="list-group-item" ng-show="selectedLabel"><input type="text" class="form-control" placeholder="new name" ng-model"changingLabelName"></li>
+                        <li class="list-group-item" ng-click="editLabelName()" ng-show="selectedLabel">Edit Label</li>
+                        <li class="list-group-item" ng-click="deleteLabel()" ng-show="selectedLabel">Delete Label</li>
+                      </ul>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <div class="dropdown">
-                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tag
+                  <button class="btn btn-default dropdown-toggle smallText" type="button" data-toggle="dropdown">Tag
                     <span class="caret"></span></button>
                       <ul class="dropdown-menu list-group">
                         <li class="list-group-item" ng-repeat="x in labels | orderBy:'eid' track by $index" ng-click="tagLabel(x)">{{x.name}}</li>
                       </ul>
                 </div>
               </div>
-              <div class="col-md-3">
-                <button class="btn btn-default" ng-click="untagLabel()" ng-show="selectedLabel">Untag</button>
+              <div class="col-md-2">
+                <button class="btn btn-default smallText" ng-click="untagLabel()" ng-show="selectedLabel">Untag</button>
+              </div>
+              <div class="col-md-4">
+                <button class="btn btn-danger smallText" ng-click="deleteNoteList()">Delete</button>
               </div>
             </div>
           </div>
@@ -60,7 +69,7 @@
       </div>
 
   </div>
-  <div class="col-md-6 noteTable">
+  <div class="col-md-5 noteTable">
 
     <div>
       <form>
@@ -471,6 +480,10 @@ textarea {
 
 .floatRight {
   float: right;
+}
+
+.smallText {
+  font-size: small;
 }
 
 #newLabelForm {
