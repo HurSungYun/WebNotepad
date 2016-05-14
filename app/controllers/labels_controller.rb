@@ -10,6 +10,15 @@ def create
   end
 end
 
+def update
+
+  @label = Label.find(params[:id])
+  @label.subject = params[:name]
+  if @label.save
+    render :json => {name: @label.subject , eid: @label.id}
+  end
+
+end
 
 def read
   @labels = Label.all

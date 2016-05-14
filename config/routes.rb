@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get 'notes/read'
   get 'labels/read'
   post 'labels/create'
+  post 'labels/update'
   post 'labels/delete'
   post 'labels/show'
   post 'labels/tagLabel'

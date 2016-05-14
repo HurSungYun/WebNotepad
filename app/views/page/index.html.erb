@@ -5,11 +5,11 @@
 
 <div class="row appTitle"  ng-init="initParameter('<%= @note %>', '<%= @label %>')" ng-model="params">
 
-<div class="alert alert-warning" ng-show="alertMsg.length" role="alert" data-dismiss="alert">
+<div class="alert alert-warning" ng-show="alertMsg.length" role="alert" >
         <h4 ng-model="alertMsg"><center>{{alertMsg}}</center></h4>
 </div>
 
- <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
+ <h1><center>WebNotepad {{changingLabelName}} <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
 </div>
 
 <div class="row">
@@ -29,20 +29,20 @@
 
         <div class="row">
           <div class="col-md-4">
-            <h4 ng-bind="selectedLabel_Name"></h4>
+            <h4 ng-bind="selectedLabelName"></h4>
           </div>
           <div class="col-md-8">
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <button class="btn btn-warning smallText dropdown-toggle" ng-show="selectedLabel" type="button" data-toggle="dropdown">Label
                   <span class="caret"></span></button>
                       <ul class="dropdown-menu list-group">
-                        <li class="list-group-item" ng-show="selectedLabel"><input type="text" class="form-control" placeholder="new name" ng-model"changingLabelName"></li>
-                        <li class="list-group-item" ng-click="editLabelName()" ng-show="selectedLabel">Edit Label</li>
+                        <li class="list-group-item" ng-show="selectedLabel"> <form class="form"> <input type="text" class="form-control" placeholder="new name" ng-model="changingLabelName"> </form></li>
+                        <li class="list-group-item" ng-click="editLabel()" ng-show="selectedLabel">Edit Label</li>
                         <li class="list-group-item" ng-click="deleteLabel()" ng-show="selectedLabel">Delete Label</li>
                       </ul>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <div class="dropdown">
                   <button class="btn btn-default dropdown-toggle smallText" type="button" data-toggle="dropdown">Tag
                     <span class="caret"></span></button>
@@ -51,11 +51,11 @@
                       </ul>
                 </div>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <button class="btn btn-default smallText" ng-click="untagLabel()" ng-show="selectedLabel">Untag</button>
               </div>
-              <div class="col-md-4">
-                <button class="btn btn-danger smallText" ng-click="deleteNoteList()">Delete</button>
+              <div class="col-md-3">
+                <button class="btn btn-danger smallText" ng-click="deleteNoteList()">DeleteAll</button>
               </div>
             </div>
           </div>
@@ -106,7 +106,8 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
         $scope.showingNotes = [];
 
         $scope.selectedLabel = 0;
-        $scope.selectedLabel_Name = "All";
+        $scope.selectedLabelName = "All";
+        $scope.changingLabelName = "";
 
         $http.get('/notes/read').then(function(response) {
           $scope.notes = response.data;
@@ -137,7 +138,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
             for(i = 0; i < $scope.labels.length; i++) {
               if($scope.params.label == $scope.labels[i].eid){
                 $scope.selectedLabel = $scope.labels[i].eid;
-                $scope.selectedLabel_Name = $scope.labels[i].name;
+                $scope.selectedLabelName = $scope.labels[i].name;
                 $scope.getNotesFromLabel($scope.labels[i].eid);
                 break;
               }
@@ -234,7 +235,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
         $scope.changeLabel = function(pLabel) {
            $scope.uncheckAll();
            $scope.selectedLabel = pLabel.eid;
-           $scope.selectedLabel_Name = pLabel.name;
+           $scope.selectedLabelName = pLabel.name;
            $scope.getNotesFromLabel(pLabel.eid);
            $scope.alertMsg = "";
            $scope.pushHistory(pLabel,null);
@@ -243,7 +244,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
         $scope.initLabel = function() {
            $scope.uncheckAll();
            $scope.selectedLabel = 0;
-           $scope.selectedLabel_Name = "All";
+           $scope.selectedLabelName = "All";
            $scope.newlabelname = "";
            $scope.showingNotes = $scope.notes;
            $scope.alertMsg = "";
@@ -291,6 +292,30 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           res.error(function(data, status, headers, config) {
           }); 
        };
+
+       $scope.editLabel = function() {
+         var dataObj = {
+           id : $scope.selectedLabel,
+           name : $scope.changingLabelName
+         };
+
+         var res = $http.post('/labels/update', dataObj);
+
+         res.success(function(data, status, headers, config) {
+           var i;
+           for (i = 0; i < $scope.labels.length; i++){
+             if ($scope.labels[i].eid == data.eid) {
+               $scope.labels[i].name = data.name;
+               $scope.selectedLabelName = data.name;
+               break;
+             }
+           }
+           $scope.changingLabelName = "";
+         });
+
+         res.error(function(data, status, headers, config) {
+          });
+       }; 
 
        $scope.tagLabel = function(pLabel) {
           var dataObj = {
@@ -343,6 +368,21 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
               }
             }
          });
+       };
+
+       $scope.deleteNoteList = function() {
+
+         for(i = 0; i < $scope.checkList.length; i++){
+           for(j = 0; j < $scope.notes.length; j++){
+             if($scope.checkList[i] == $scope.notes[j].eid){
+               $scope.deleteNote($scope.notes[j]);
+               console.log("RUN");
+               break;
+             }
+           }
+         }
+         $scope.uncheckAll();
+
        };
 
 // From here, handle Notes
@@ -413,10 +453,15 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
         };
 
         $scope.deleteNote = function(pNote) {
-          var dataObj = {
-            id : $scope.curr_eid
-          };
-
+          if(pNote!=null){
+            var dataObj = {
+              id : pNote.eid
+            };
+          }else{
+            var dataObj = {
+              id : $scope.curr_eid
+            };
+          }
           var res = $http.post('/notes/delete',dataObj);
           
           res.success(function(data, status, headers, config) {
