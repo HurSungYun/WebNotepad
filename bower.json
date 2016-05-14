@@ -1,0 +1,22 @@
+{
+  "name": "WebNotepad",
+  "homepage": "https://github.com/HurSungYun/WebNotepad",
+  "authors": [
+    "Ethan Hur <ethan0311@gmail.com>"
+  ],
+  "description": "WebNotepad",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.5",
+    "angular-ui-router": "^0.2.18",
+    "bootstrap": "^3.3.6"
+  }
+}
