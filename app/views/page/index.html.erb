@@ -63,7 +63,7 @@
 
       <div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">{{x.subject}}<br>{{x.content}}</li> 
+              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">Subject : {{x.subject}}<br>Content : {{x.content.substring(0,10)}} <br>{{x.updatedAt}}</li> 
               <li class="list-group-item" ng-hide="showingNotes.length"> No note exist here. </li>
         </ul> 
       </div>
