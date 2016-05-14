@@ -78,6 +78,16 @@ def tagLabel
     if @label.save
       render :json => {item: temp, eid: @label.id, notes: @note_json}
     end
+  else
+     if @label.notes != nil
+        @note_json = []
+        @label.notes.each do |note|
+          @note_json << { eid: note.id }
+        end
+     else
+       @note_json = []
+     end
+        render :json => {item: @label.item, eid: @label.id, notes: @note_json}
   end
 end
 
@@ -92,7 +102,6 @@ def untagLabel
       if @label.note_ids.index(note_id) != nil
         @label.notes.delete(pNote)
         temp = temp - 1
-        print "FUCK"
       end
     end
 
@@ -110,6 +119,16 @@ def untagLabel
     if @label.save
       render :json => {item: temp, eid: @label.id, notes: @note_json}
     end
+  else
+     if @label.notes != nil
+        @note_json = []
+        @label.notes.each do |note|
+          @note_json << { eid: note.id }
+        end
+     else
+       @note_json = []
+     end
+        render :json => {item: @label.item, eid: @label.id, notes: @note_json}
   end
 end
 
