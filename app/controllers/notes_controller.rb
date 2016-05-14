@@ -8,7 +8,7 @@ def create
   @note.content = params[:content]
   
   if @note.save
-    render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.created_at.to_formatted_s(:rfc822), eid: @note.id }
+    render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.created_at.to_formatted_s(:rfc822), eid: @note.id}
   end
 end
 
@@ -29,7 +29,7 @@ def update
   @note.content = params[:content]
   
   if @note.save
-    render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.updated_at.to_formatted_s(:rfc822), eid: @note.id }
+    render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.updated_at.to_formatted_s(:rfc822), eid: @note.id}
   end
 
 end

@@ -1,17 +1,13 @@
 <html>
 <head>
-<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> --!>
 </head>
 <body ng-app="webnotepad" ng-controller="notecontroller">
 
 <div class="row appTitle"  ng-init="initParameter('<%= @note %>', '<%= @label %>')" ng-model="params">
 
-<% if flash[:alert] != nil %>
-<div class="alert alert-warning alert-dismissible" id="AlertBox" role="alert" data-dismiss="alert">
-        <h4 id="AlertMessage"><%= flash[:alert] %></h4>
+<div class="alert alert-warning" ng-show="alertMsg.length" role="alert" data-dismiss="alert">
+        <h4 ng-model="alertMsg"><center>{{alertMsg}}</center></h4>
 </div>
-<% end %>
 
  <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
 </div>
@@ -85,14 +81,13 @@
 <script>
 var myApp = angular.module('webnotepad', []);
 
-
-
-myApp.controller('notecontroller',function($scope, $http) {
+myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 
 // initialize variables
 
         $scope.checkList = [];
         $scope.updatedAt = null;
+        $scope.alertMsg = "";
 
 	$scope.notes = [];
         $scope.notesNumber = 0;
@@ -108,7 +103,6 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.notes = response.data;
           $scope.showingNotes = $scope.notes;
           $scope.notesNumber = $scope.notes.length;
-          $scope.setZeroNotes();
           $scope.doParameter();
         });
 
@@ -225,24 +219,15 @@ myApp.controller('notecontroller',function($scope, $http) {
                  }
               }
            }
-           $scope.setZeroNotes();
         };
 
-        $scope.setZeroNotes = function() {                 //duplicated
-            if ($scope.showingNotes.length == 0) {
-               $scope.zeroNotes = true;
-            } else {
-               $scope.zeroNotes = false;
-            }
-
-        };
 
         $scope.changeLabel = function(pLabel) {
            $scope.uncheckAll();
            $scope.selectedLabel = pLabel.eid;
            $scope.selectedLabel_Name = pLabel.name;
            $scope.getNotesFromLabel(pLabel.eid);
-           $scope.setZeroNotes();
+           $scope.alertMsg = "";
            $scope.pushHistory(pLabel,null);
         };
 
@@ -252,7 +237,7 @@ myApp.controller('notecontroller',function($scope, $http) {
            $scope.selectedLabel_Name = "All";
            $scope.newlabelname = "";
            $scope.showingNotes = $scope.notes;
-           $scope.setZeroNotes();
+           $scope.alertMsg = "";
            $scope.pushHistory({ eid : 0 }, null);
         };
 
@@ -272,6 +257,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                     break;
                  }
               }
+            $scope.alertMsg = "label is deleted successfully";
           });
 
           res.error(function(data, status, headers, config) {
@@ -290,6 +276,7 @@ myApp.controller('notecontroller',function($scope, $http) {
             $scope.labels.push(data);
             $scope.changeLabel(data);
             $scope.newlabelname = "";
+            $scope.alertMsg = "label is created successfully";
           });
 
           res.error(function(data, status, headers, config) {
@@ -315,6 +302,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                 $scope.getNotesFromLabel($scope.labels[i].eid);
                 $scope.changeLabel($scope.labels[i]);
                 $scope.checkList = [];
+                break;
               } 
             }
           });
@@ -356,6 +344,7 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.updatedAt = null;
           $scope.editMode = false;
           $scope.curr_eid = null;
+          $scope.alertMsg = "";
         };
 
         $scope.newNote = function() {
@@ -370,7 +359,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                         $scope.curr_eid = data.eid;
                         $scope.updatedAt = data.updatedAt;
                         $scope.notesNumber = $scope.notesNumber + 1;
-                        $scope.setZeroNotes();
+                        $scope.alertMsg = "note is created successfully"
 		});
 		res.error(function(data, status, headers, config) {
 		});
@@ -382,6 +371,7 @@ myApp.controller('notecontroller',function($scope, $http) {
           $scope.updatedAt = pNote.updatedAt;
           $scope.curr_eid = pNote.eid;
           $scope.editMode = true;
+          $scope.alertMsg = "";
           $scope.pushHistory(null,pNote);
         };
 
@@ -407,6 +397,7 @@ myApp.controller('notecontroller',function($scope, $http) {
                        break;
                      }
                    }
+                   $scope.alertMsg = "note is updated succesfully";
                });
                res.error(function(data, status, headers, config) {
                });
@@ -441,12 +432,12 @@ myApp.controller('notecontroller',function($scope, $http) {
                   }
                 }
              }
-             console.log(pLabel);
+             
              if(pLabel != null)
                $scope.changeLabel(pLabel);
              $scope.checkList = [];
-             $scope.setZeroNotes();
              $scope.curr_eid = null;
+             $scope.alertMsg = "note is deleted succesfully";
              $scope.pushHistory(pLabel,{ eid: 0});
           });
           res.error(function(data, status, headers, config) {
