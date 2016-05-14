@@ -9,14 +9,14 @@
         <h4 ng-model="alertMsg"><center>{{alertMsg}}</center></h4>
 </div>
 
- <h1><center>WebNotepad {{changingLabelName}} <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
+ <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
 </div>
 
 <div class="row">
   <div class="col-md-2">
     <ul class="list-group">
-      <li class="list-group-item" ng-click="initLabel()"><span class="badge">{{notesNumber}}</span>All</li>
-      <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="changeLabel(x)"><span class="badge">{{x.item}}</span>{{x.name}}</li>
+      <li class="list-group-item" ng-click="initLabel()" ng-class="{labelBold: 0 == selectedLabel}"><span class="badge">{{notesNumber}}</span>All</li>
+      <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="changeLabel(x)" ng-class="{labelBold: x.eid==selectedLabel}"><span class="badge">{{x.item}}</span>{{x.name}}</li>
       <li class="list-group-item">
         <form class="form" id="newLabelForm">
           <input type="text" class="form-control" id="newLabel" placeholder="new label" ng-model="newlabelname">
@@ -529,6 +529,11 @@ textarea {
 
 .smallText {
   font-size: small;
+}
+
+.labelBold {
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 #newLabelForm {
