@@ -45,7 +45,7 @@
                   <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tag
                     <span class="caret"></span></button>
                       <ul class="dropdown-menu list-group">
-                        <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="tagLabel(x)">{{x.name}}</li>
+                        <li class="list-group-item" ng-repeat="x in labels | orderBy:'eid' track by $index" ng-click="tagLabel(x)">{{x.name}}</li>
                       </ul>
                 </div>
               </div>
@@ -58,7 +58,7 @@
 
       <div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in showingNotes track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">{{x.subject}}<br>{{x.content}}</li> 
+              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">{{x.subject}}<br>{{x.content}}</li> 
               <li class="list-group-item" ng-hide="showingNotes.length"> No note exist here. </li>
         </ul> 
       </div>
