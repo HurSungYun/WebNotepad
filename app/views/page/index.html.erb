@@ -23,7 +23,7 @@
       <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="changeLabel(x)" ng-class="{labelBold: x.eid==selectedLabel}"><span class="badge">{{x.item}}</span>{{x.name}}</li>
       <li class="list-group-item">
         <form class="form" id="newLabelForm">
-          <input type="text" class="form-control" id="newLabel" placeholder="new label" ng-model="newlabelname">
+          <input type="text" class="form-control" id="newLabel" placeholder="new label" ng-model="newLabelName">
           <br> <center><button class="btn btn-default" ng-click="newLabel()">Add</button></center>
         </form>
       </li> 
