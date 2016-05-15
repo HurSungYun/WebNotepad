@@ -74,12 +74,12 @@
     <div>
       <form> 
        Subject: <br> <div ng-model="curr_eid"></div>
-       <input type="text" class="form-control" placeholder="Text input" ng-model="subject" ng-readonly="formReadonly" ng-click="formChangeEdit()"><br>
+       <input type="text" class="form-control" id="formTextSubject" placeholder="Text input" ng-model="subject" ng-readonly="formReadonly" ng-click="formChangeEdit()"><br>
        Content:<br>
-       <textarea class="form-control" row="6" placeholder="Contents input" ng-model="content" ng-readonly="formReadonly" ng-click="formChangeEdit()"></textarea>
+       <textarea class="form-control" id="formTextContent" row="6" placeholder="Contents input" ng-model="content" ng-readonly="formReadonly" ng-click="formChangeEdit()"></textarea>
        <p ng-model="updatedAt" ng-show="editMode">Last Updated: {{updatedAt}}</p><br>
-       <button class="btn btn-default" ng-click="editNote()" ng-show="editMode" ng-disabled="formReadonly">Edit</button> <button class="btn btn-danger" ng-click="deleteNote()" ng-show="editMode">Delete</button>
-       <button class="btn btn-primary" ng-click="changeCreateMode()" ng-show="editMode">New Memo</button> <button class="btn btn-primary" ng-click="newNote()" ng-hide="editMode">Apply</button>
+       <button class="btn btn-default" id="editNoteButton" ng-click="editNote()" ng-show="editMode" ng-disabled="formReadonly">Edit</button> <button class="btn btn-danger" id="deleteNoteButton"  ng-click="deleteNote()" ng-show="editMode">Delete</button>
+       <button class="btn btn-primary" ng-click="changeCreateMode()" ng-show="editMode" id="newNoteModeButton">New Memo</button> <button class="btn btn-primary" id="newNoteButton" ng-click="newNote()" ng-hide="editMode">Apply</button>
       </form>
     </div>
 
