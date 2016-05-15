@@ -57,7 +57,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 
 //
 
-        $scope.doParameter = function() {
+        $scope.doParameter = function() {                     // Due to async, it is called twice 
           if($scope.params.note != null && $scope.params.note != 0){
             var i;
             for(i = 0; i < $scope.notes.length; i++) {
@@ -79,7 +79,6 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
             }
           }
         };
-
 
 	$scope.initParameter = function(note, label) {
 		$scope.params = { note : note, label : label };
@@ -298,6 +297,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
                           $scope.notesNumber = $scope.notesNumber + 1;
                           $scope.alertMsg = "note is created successfully";
                           $scope.formChangeRead();
+                          $scope.pushHistory(null,data);
                         }else{
                           $scope.alertMsg = "length of subject should be 1~45";
                         }
