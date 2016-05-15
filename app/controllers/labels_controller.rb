@@ -1,23 +1,29 @@
 class LabelsController < ApplicationController
 
 def create
-  @label = Label.new
-  @label.subject = params[:name]
-  @label.item = 0
+  if (params[:name].length != 0 && params[:name].length < 15) || params[:name] == nil
+    @label = Label.new
+    @label.subject = params[:name]
+    @label.item = 0
 
-  if @label.save
-    render :json => {name: @label.subject, item: @label.item, eid: @label.id, notes: [] }
+    if @label.save
+      render :json => {name: @label.subject, item: @label.item, eid: @label.id, notes: [] }
+    end
+  else
+    render :json => {eid: -1}
   end
 end
 
 def update
-
-  @label = Label.find(params[:id])
-  @label.subject = params[:name]
-  if @label.save
-    render :json => {name: @label.subject , eid: @label.id}
+  if (params[:name].length != 0 && params[:name].length < 15) || params[:name] == nil
+    @label = Label.find(params[:id])
+    @label.subject = params[:name]
+    if @label.save
+      render :json => {name: @label.subject , eid: @label.id}
+    end
+  else
+    render :json => {eid: -1}
   end
-
 end
 
 def read

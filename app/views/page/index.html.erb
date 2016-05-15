@@ -55,7 +55,7 @@
                 <button class="btn btn-default smallText" ng-click="untagLabel()" ng-show="selectedLabel">Untag</button>
               </div>
               <div class="col-md-3">
-                <button class="btn btn-danger smallText" ng-click="deleteNoteList()">DeleteAll</button>
+                <button class="btn btn-danger smallText" ng-click="deleteNoteList()">Del List</button>
               </div>
             </div>
           </div>
@@ -63,7 +63,7 @@
 
       <div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">Subject : {{x.subject}}<br>Content : {{x.content.substring(0,10)}}<i ng-hide="x.content.length < 10">...(more)</i> <br>{{x.updatedAt}}</li> 
+              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">Subject : {{x.subject}}<br>Content : {{x.content.substring(0,10)}}<i ng-hide="x.content.length < 10 || x.content == null">......(more)</i> <br>{{x.updatedAt}}</li> 
               <li class="list-group-item" ng-hide="showingNotes.length"> No note exist here. </li>
         </ul> 
       </div>
@@ -104,12 +104,15 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
         $scope.notesNumber = 0;
         $scope.labels = [];
         $scope.curr_eid = null;
+        $scope.subject = "";
+        $scope.contetn = "";
         $scope.editMode = false;
         $scope.showingNotes = [];
 
         $scope.selectedLabel = 0;
         $scope.selectedLabelName = "All";
         $scope.changingLabelName = "";
+        $scope.newlabelname = "";
 
         $http.get('/notes/read').then(function(response) {
           $scope.notes = response.data;
@@ -295,10 +298,14 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           var res = $http.post('/labels/create',dataObj);
         
           res.success(function(data, status, headers, config) {
-            $scope.labels.push(data);
-            $scope.changeLabel(data);
-            $scope.newlabelname = "";
-            $scope.alertMsg = "label is created successfully";
+            if(data.eid != -1){
+              $scope.labels.push(data);
+              $scope.changeLabel(data);
+              $scope.newlabelname = "";
+              $scope.alertMsg = "label is created successfully";
+            }else{
+              $scope.alertMsg = "length of label should be 1~15";
+            }
           });
 
           res.error(function(data, status, headers, config) {
@@ -314,15 +321,20 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
          var res = $http.post('/labels/update', dataObj);
 
          res.success(function(data, status, headers, config) {
-           var i;
-           for (i = 0; i < $scope.labels.length; i++){
-             if ($scope.labels[i].eid == data.eid) {
-               $scope.labels[i].name = data.name;
-               $scope.selectedLabelName = data.name;
-               break;
+           if(data.eid != -1){
+             var i;
+             for (i = 0; i < $scope.labels.length; i++){
+               if ($scope.labels[i].eid == data.eid) {
+                 $scope.labels[i].name = data.name;
+                 $scope.selectedLabelName = data.name;
+                 $scope.alertMsg = "label name is changed successfully";
+                 break;
+               }
              }
+             $scope.changingLabelName = "";
+           }else{
+             $scope.alertMsg = "length of label should be 1~15";
            }
-           $scope.changingLabelName = "";
          });
 
          res.error(function(data, status, headers, config) {
@@ -416,13 +428,17 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 		}; 
           var res = $http.post('/notes/create', dataObj);
 		res.success(function(data, status, headers, config) {
-			$scope.notes.push(data);
-                        $scope.editMode = true;
-                        $scope.curr_eid = data.eid;
-                        $scope.updatedAt = data.updatedAt;
-                        $scope.notesNumber = $scope.notesNumber + 1;
-                        $scope.alertMsg = "note is created successfully"
-                        $scope.formChangeRead();
+                        if( data.eid != -1) {
+			  $scope.notes.push(data);
+                          $scope.editMode = true;
+                          $scope.curr_eid = data.eid;
+                          $scope.updatedAt = data.updatedAt;
+                          $scope.notesNumber = $scope.notesNumber + 1;
+                          $scope.alertMsg = "note is created successfully";
+                          $scope.formChangeRead();
+                        }else{
+                          $scope.alertMsg = "length of subject should be 1~45";
+                        }
 		});
 		res.error(function(data, status, headers, config) {
 		});
@@ -448,21 +464,25 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 
           var res = $http.post('/notes/update',dataObj);
                res.success(function(data, status, headers, config) {
-                  var i;
-                  for(i=0; i< $scope.notes.length; i++){
-                     if ( $scope.notes[i].eid == data.eid ){
-                       $scope.notes[i].subject = data.subject;
-                       $scope.notes[i].content = data.content;
+                  if( data.eid != -1){
+                    var i;
+                    for(i=0; i< $scope.notes.length; i++){
+                       if ( $scope.notes[i].eid == data.eid ){
+                         $scope.notes[i].subject = data.subject;
+                         $scope.notes[i].content = data.content;
 
-                       $scope.subject = data.subject;
-                       $scope.content = data.content;
-                       $scope.updatedAt = data.updatedAt;
+                         $scope.subject = data.subject;
+                         $scope.content = data.content;
+                         $scope.updatedAt = data.updatedAt;
                        
-                       break;
+                         break;
+                       }
                      }
+                     $scope.alertMsg = "note is updated succesfully";
+                     $scope.formChangeRead();
+                   }else{
+                     $scope.alertMsg = "length of subject should be 1~45";
                    }
-                   $scope.alertMsg = "note is updated succesfully";
-                   $scope.formChangeRead();
                });
                res.error(function(data, status, headers, config) {
                });

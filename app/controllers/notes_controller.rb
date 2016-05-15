@@ -4,11 +4,15 @@ require 'json'
 
 
 def create
-  @note = Note.new(subject: params[:subject])
-  @note.content = params[:content]
-  
-  if @note.save
-    render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.created_at.to_formatted_s(:rfc822), eid: @note.id}
+  if (params[:subject].length != 0 && params[:subject].length < 45) || params[:subject] == nil
+    @note = Note.new(subject: params[:subject])
+    @note.content = params[:content]
+ 
+    if @note.save
+      render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.created_at.to_formatted_s(:rfc822), eid: @note.id}
+    end
+  else
+    render :json => { eid: -1 }
   end
 end
 
@@ -23,13 +27,17 @@ def read
 end
 
 def update
-  @note = Note.find(params[:id])
+  if (params[:subject].length != 0 && params[:subject].length < 45) || params[:subject] == nil
+    @note = Note.find(params[:id])
 
-  @note.subject = params[:subject]
-  @note.content = params[:content]
+    @note.subject = params[:subject]
+    @note.content = params[:content]
   
-  if @note.save
-    render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.updated_at.to_formatted_s(:rfc822), eid: @note.id}
+    if @note.save
+      render :json => { subject: @note.subject, content: @note.content, updatedAt: @note.updated_at.to_formatted_s(:rfc822), eid: @note.id}
+    end
+  else
+    render :json => { eid: -1 }
   end
 
 end
