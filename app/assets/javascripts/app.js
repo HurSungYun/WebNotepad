@@ -41,6 +41,18 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           return i;
         };
 
+        function setShowNote(pSubject, pContent, pUpdatedAt, pNoteId){
+          if(pSubject != null) $scope.subject = pSubject;
+          if(pContent != null) $scope.content = pContent;
+          if(pUpdatedAt != null) $scope.updatedAt = pUpdatedAt;
+          if(pNoteId != null) $scope.curNoteId = pNoteId;
+        };
+
+        function setShowLabel(pId,pName){
+          if(pId != null) $scope.selectedLabel = pId;
+          if(pName != null) $scope.selectedLabelName = pName;
+        };
+
 // Get data from server
 
         $http.get('/notes/read').then(function(response) { // Get the note data from server at first loading page
@@ -71,8 +83,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
             var i;
             for(i = 0; i < $scope.labels.length; i++) {
               if($scope.params.label == $scope.labels[i].eid){
-                $scope.selectedLabel = $scope.labels[i].eid;
-                $scope.selectedLabelName = $scope.labels[i].name;
+                setShowLabel($scope.labels[i].eid, $scope.labels[i].name);
                 $scope.getNotesFromLabel($scope.labels[i].eid);
                 break;
               }
@@ -156,16 +167,14 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
         };
         $scope.changeLabel = function(pLabel) {
            $scope.uncheckAll();
-           $scope.selectedLabel = pLabel.eid;
-           $scope.selectedLabelName = pLabel.name;
+           setShowLabel(pLabel.eid, pLabel.name);
            $scope.getNotesFromLabel(pLabel.eid);
            $scope.alertMsg = "";
            $scope.pushHistory(pLabel,null);
         };
         $scope.initLabel = function() {
            $scope.uncheckAll();
-           $scope.selectedLabel = 0;
-           $scope.selectedLabelName = "All";
+           setShowLabel(0,"All");
            $scope.newLabelName = "";
            $scope.showingNotes = $scope.notes;
            $scope.alertMsg = "";
@@ -218,7 +227,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 
              label_idx = findLabelIndexById(data.eid);
              $scope.labels[label_idx].name = data.name;
-             $scope.selectedLabelName = data.name;
+             setShowLabel(null,data.name);
              $scope.alertMsg = "label name is changed successfully";
              $scope.changingLabelName = "";
            }else{
@@ -273,42 +282,36 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
        };
 // From here, handle Notes
         $scope.changeCreateMode = function() {
-          $scope.subject = "";
-          $scope.content = "";
-          $scope.updatedAt = null;
+          setShowNote("","","",0);
           $scope.editMode = false;
-          $scope.curNoteId = null;
           $scope.alertMsg = "";
           $scope.formChangeEdit();
         };
         $scope.newNote = function() {
           var dataObj = {
-				subject : $scope.subject,
-				content : $scope.content
-		}; 
+		subject : $scope.subject,
+		content : $scope.content
+          }; 
           var res = $http.post('/notes/create', dataObj);
-		res.success(function(data, status, headers, config) {
-                        if( data.eid != -1) {
-			  $scope.notes.push(data);
-                          $scope.editMode = true;
-                          $scope.curNoteId = data.eid;
-                          $scope.updatedAt = data.updatedAt;
-                          $scope.notesNumber = $scope.notesNumber + 1;
-                          $scope.alertMsg = "note is created successfully";
-                          $scope.formChangeRead();
-                          $scope.pushHistory(null,data);
-                        }else{
-                          $scope.alertMsg = "length of subject should be 1~45";
-                        }
-		});
-		res.error(function(data, status, headers, config) {
-		});
+	  
+          res.success(function(data, status, headers, config) {
+            if( data.eid != -1) {
+	      $scope.notes.push(data);
+              $scope.editMode = true;
+              setShowNote(null,null,data.updatedAt,data.eid);
+              $scope.notesNumber = $scope.notesNumber + 1;
+              $scope.alertMsg = "note is created successfully";
+              $scope.formChangeRead();
+              $scope.pushHistory(null,data);
+            }else{
+              $scope.alertMsg = "length of subject should be 1~45";
+            }
+	  });
+	  res.error(function(data, status, headers, config) {
+	  });
         };
         $scope.showNote = function(pNote) {
-          $scope.subject = pNote.subject;
-          $scope.content = pNote.content;
-          $scope.updatedAt = pNote.updatedAt;
-          $scope.curNoteId = pNote.eid;
+          setShowNote(pNote.subject, pNote.content, pNote.updatedAt, pNote.eid);
           $scope.editMode = true;
           $scope.alertMsg = "";
           $scope.formChangeRead();
@@ -327,9 +330,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
                     note_idx = findNoteIndexById(data.eid);
                     $scope.notes[note_idx].subject = data.subject;
                     $scope.notes[note_idx].content = data.content;
-                    $scope.subject = data.subject;
-                    $scope.content = data.content;
-                    $scope.updatedAt = data.updatedAt;
+                    setShowNote(data.subject, data.content, data.updatedAt, null);
                     $scope.alertMsg = "note is updated succesfully";
                     $scope.formChangeRead();
                    }else{
@@ -373,13 +374,12 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
              if(pLabel != null)
                $scope.changeLabel(pLabel);
              $scope.checkList = [];
-             $scope.curNoteId = null;
+             setShowNote(null,null,null,0);
              $scope.alertMsg = "note is deleted succesfully";
              $scope.formChangeEdit();
              $scope.pushHistory(pLabel,{ eid: 0});
           });
           res.error(function(data, status, headers, config) {
           });
-        };
- 
+        }; 
 });
