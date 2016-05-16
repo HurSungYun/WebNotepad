@@ -1,0 +1,21 @@
+#formTextContent {
+    resize: none;
+    width: 100%;
+    height: 300px;
+}
+.appTitle {
+   margin-bottom: 50px;
+}
+.noteTable {
+   padding: 20px;
+}
+.floatRight {
+  float: right;
+}
+.smallText {
+  font-size: small;
+}
+.labelBold {
+  font-weight: bold;
+  text-decoration: underline;
+}
