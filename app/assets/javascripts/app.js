@@ -20,6 +20,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
         $scope.selectedLabelName = "All";  // name of selected label
         $scope.changingLabelName = "";  // store name for change label name (temporary)
         $scope.newLabelName = ""; // store name for new label name (temporary) 
+        $scope.noteSearch = "";
 
         function findLabelIndexById(label_id){
           var i;
