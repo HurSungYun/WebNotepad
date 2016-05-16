@@ -4,14 +4,14 @@ var myApp = angular.module('webnotepad', []);
 myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 
 // initialize variables
-        $scope.formReadonly = $scope.curr_eid == null ? false : true;  //This checks the note view is read mode or edit mode
+        $scope.formReadonly = $scope.curNoteId == null ? false : true;  //This checks the note view is read mode or edit mode
         $scope.checkList = [];      // This variable stores id list of checked note
         $scope.updatedAt = null;    // This variable stores and showing updatedAt value of current note
         $scope.alertMsg = "";       // This is string that shows uppermost bar. This is use for noticing something to user
 	$scope.notes = [];          // Get all notes list from server and store it
         $scope.notesNumber = 0;     // number of notes
         $scope.labels = [];         // store information of label
-        $scope.curr_eid = null;     // id of current showing note 
+        $scope.curNoteId = null;     // id of current showing note 
         $scope.subject = "";        // subject of ../
         $scope.content = "";        // content of ...
         $scope.editMode = false;    // signal bit for telling note view is editmode or createmode
@@ -84,7 +84,6 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
 		$scope.params = { note : note, label : label };
         };
 
-
 //From here, change read/edit mode
 
         $scope.formChangeEdit = function() {
@@ -99,8 +98,8 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           var tNote = {eid : 0 };
           if(pLabel != null) {
             tLabel = pLabel;
-            if($scope.curr_eid != null) {
-              tNote.eid = $scope.curr_eid;
+            if($scope.curNoteId != null) {
+              tNote.eid = $scope.curNoteId;
             }
           }
           if(pNote != null) {
@@ -278,7 +277,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           $scope.content = "";
           $scope.updatedAt = null;
           $scope.editMode = false;
-          $scope.curr_eid = null;
+          $scope.curNoteId = null;
           $scope.alertMsg = "";
           $scope.formChangeEdit();
         };
@@ -292,7 +291,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
                         if( data.eid != -1) {
 			  $scope.notes.push(data);
                           $scope.editMode = true;
-                          $scope.curr_eid = data.eid;
+                          $scope.curNoteId = data.eid;
                           $scope.updatedAt = data.updatedAt;
                           $scope.notesNumber = $scope.notesNumber + 1;
                           $scope.alertMsg = "note is created successfully";
@@ -309,7 +308,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           $scope.subject = pNote.subject;
           $scope.content = pNote.content;
           $scope.updatedAt = pNote.updatedAt;
-          $scope.curr_eid = pNote.eid;
+          $scope.curNoteId = pNote.eid;
           $scope.editMode = true;
           $scope.alertMsg = "";
           $scope.formChangeRead();
@@ -317,7 +316,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
         };
         $scope.editNote = function() {
           var dataObj = {
-              id : $scope.curr_eid,
+              id : $scope.curNoteId,
               subject : $scope.subject,
               content : $scope.content,
           };
@@ -347,7 +346,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
             };
           }else{
             var dataObj = {
-              id : $scope.curr_eid
+              id : $scope.curNoteId
             };
           }
           var res = $http.post('/notes/delete',dataObj);
@@ -374,7 +373,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
              if(pLabel != null)
                $scope.changeLabel(pLabel);
              $scope.checkList = [];
-             $scope.curr_eid = null;
+             $scope.curNoteId = null;
              $scope.alertMsg = "note is deleted succesfully";
              $scope.formChangeEdit();
              $scope.pushHistory(pLabel,{ eid: 0});
