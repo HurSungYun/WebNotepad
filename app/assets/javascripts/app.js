@@ -1,17 +1,17 @@
 var myApp = angular.module('webnotepad', []);
 
 
-myApp.controller('notecontroller',function($scope, $http, $rootScope) {
+myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
 
 // initialize variables
         $scope.formReadonly = $scope.curNoteId == null ? false : true;  //This checks the note view is read mode or edit mode
         $scope.checkList = [];      // This variable stores id list of checked note
-        $scope.updatedAt = null;    // This variable stores and showing updatedAt value of current note
+        $scope.updatedAt = "";    // This variable stores and showing updatedAt value of current note
         $scope.alertMsg = "";       // This is string that shows uppermost bar. This is use for noticing something to user
 	$scope.notes = [];          // Get all notes list from server and store it
         $scope.notesNumber = 0;     // number of notes
         $scope.labels = [];         // store information of label
-        $scope.curNoteId = null;     // id of current showing note 
+        $scope.curNoteId = 0;     // id of current showing note 
         $scope.subject = "";        // subject of ../
         $scope.content = "";        // content of ...
         $scope.editMode = false;    // signal bit for telling note view is editmode or createmode
@@ -67,7 +67,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
           $scope.doParameter();
         });
 
-//
+        $scope.initFlag = false;
 
         $scope.doParameter = function() {                     // Due to async, it is called twice 
           if($scope.params.note != null && $scope.params.note != 0){
@@ -89,6 +89,8 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
               }
             }
           }
+          if($scope.initFlag == false) $scope.initFlag = true;
+          else $scope.saveCurrentState();
         };
 
 	$scope.initParameter = function(note, label) {
@@ -103,8 +105,60 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope) {
         $scope.formChangeRead = function() {
            $scope.formReadonly = true;
         };
+
+        state_pointer = -1;
+        selectedLabel_save = [];
+        selectedLabelName_save = [];
+        curNoteId_save = [];
+        subject_save = [];
+        content_save = [];
+        updatedAt_save = [];
+        editMode_save = [];
+
 //From here, history part
-        $scope.pushHistory =  function(pLabel,pNote) { 
+
+        $scope.saveCurrentState = function(){
+          selectedLabel_save.push($scope.selectedLabel);
+          selectedLabelName_save.push($scope.selectedLabelName);
+          curNoteId_save.push($scope.curNoteId);
+          subject_save.push($scope.subject);
+          content_save.push($scope.content);
+          updatedAt_save.push($scope.updatedAt);
+          editMode_save.push($scope.editMode);
+          state_pointer = state_pointer + 1;
+        };
+
+        $scope.getCurrentState = function(){
+          //TODO: handling go backwards too far
+          if(state_pointer != 0) 
+            state_pointer = state_pointer - 1;
+
+          $scope.uncheckAll();
+          $scope.selectedLabel = selectedLabel_save[state_pointer];
+          $scope.selectedLabelName = selectedLabelName_save[state_pointer];
+          $scope.curNoteId = curNoteId_save[state_pointer];
+          $scope.subject = subject_save[state_pointer];
+          $scope.content = content_save[state_pointer];
+          $scope.updatedAt = updatedAt_save[state_pointer];
+          $scope.editMode = editMode_save[state_pointer];
+          if(!$scope.editMode) $scope.formChangeEdit();
+          else $scope.formChangeRead();
+          if($scope.selectedLabel != 0) $scope.getNotesFromLabel($scope.selectedLabel);
+          else {
+            setShowLabel(0,"All");
+            $scope.showingNotes = $scope.notes;
+          }
+          $scope.$apply();
+        };
+
+        $window.onpopstate = function(event) {
+          $scope.getCurrentState();
+        };
+
+        $scope.pushHistory =  function(pLabel,pNote) {
+
+          $scope.saveCurrentState();
+
           var tLabel = { eid : 0 };
           var tNote = {eid : 0 };
           if(pLabel != null) {
