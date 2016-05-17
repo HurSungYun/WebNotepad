@@ -21,6 +21,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
         $scope.changingLabelName = "";  // store name for change label name (temporary)
         $scope.newLabelName = ""; // store name for new label name (temporary) 
         $scope.noteSearch = "";
+        $scope.somethingFiltered = true;
 
         function findLabelIndexById(label_id){
           var i;
@@ -105,6 +106,22 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
         };
         $scope.formChangeRead = function() {
            $scope.formReadonly = true;
+        };
+
+        $scope.searchingFilter = function() {
+          var i, flag = false;
+          for (i=0;i<$scope.showingNotes.length;i++) {
+            if($scope.showingNotes[i].content != null && $scope.showingNotes[i].content.indexOf($scope.noteSearch) > -1) {
+              flag = true;
+              break;
+          }  
+            if($scope.showingNotes[i].subject.indexOf($scope.noteSearch) > -1){  
+              flag = true;
+              break;
+          }
+        }
+          if(flag) $scope.somethingFiltered = true;
+          else $scope.somethingFiltered = false;
         };
 
         state_pointer = -1;
