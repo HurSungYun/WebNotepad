@@ -20,8 +20,8 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
         $scope.selectedLabelName = "All";  // name of selected label
         $scope.changingLabelName = "";  // store name for change label name (temporary)
         $scope.newLabelName = ""; // store name for new label name (temporary) 
-        $scope.noteSearch = "";
-        $scope.somethingFiltered = true;
+        $scope.noteSearch = "";   // ng-model for noteSearch
+        $scope.somethingFiltered = true;  // flag noticing something is filtered or not
 
         function findLabelIndexById(label_id){
           var i;
@@ -95,7 +95,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           else $scope.saveCurrentState();
         };
 
-	$scope.initParameter = function(note, label) {
+	$scope.initParameter = function(note, label) {  // get parameter when refreshing the page
 		$scope.params = { note : note, label : label };
         };
 
@@ -108,7 +108,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
            $scope.formReadonly = true;
         };
 
-        $scope.searchingFilter = function() {
+        $scope.searchingFilter = function() {    // when input some string in search input, check something is filtered or not
           var i, flag = false;
           for (i=0;i<$scope.showingNotes.length;i++) {
             if($scope.showingNotes[i].content != null && $scope.showingNotes[i].content.indexOf($scope.noteSearch) > -1) {
@@ -124,7 +124,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           else $scope.somethingFiltered = false;
         };
 
-        state_pointer = -1;
+        state_pointer = -1;            // stack and stack pointer for save states
         selectedLabel_save = [];
         selectedLabelName_save = [];
         curNoteId_save = [];
@@ -169,7 +169,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           $scope.$apply();
         };
 
-        $window.onpopstate = function(event) {
+        $window.onpopstate = function(event) {    // when browser back button is triggered, get the states that saved before.
           $scope.getCurrentState();
         };
 
@@ -198,7 +198,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
         };
         
 //From here, handle checklist
-        $scope.checkNote = function(pNote) {
+        $scope.checkNote = function(pNote) {  // when check the checkbox, add id of it to list
           var i, flag = false;
           for(i = 0; i < $scope.checkList.length; i++) {
              if($scope.checkList[i] == pNote.eid) {
@@ -212,10 +212,10 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
             $scope.checkList.push(pNote.eid);
           }
         };
-        $scope.uncheckNote = function(idx) { 
+        $scope.uncheckNote = function(idx) { // when it call once again, uncheck it
             $scope.checkList.splice(idx,1);
         };
-        $scope.uncheckAll = function() {
+        $scope.uncheckAll = function() {  // if label is changed, initialze list 
             angular.forEach($scope.showingNotes, function (pNote) {
               pNote.selected = false;
             });
@@ -226,7 +226,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
            $scope.showingNotes = [];
         };
  
-        $scope.getNotesFromLabel = function(label_eid) {
+        $scope.getNotesFromLabel = function(label_eid) { // get notes from list with checking whether it need to be shown
            var i, j, cur_label, note_idx;
            $scope.makeShowingNotesEmpty();
 
@@ -237,7 +237,8 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
               $scope.showingNotes.push($scope.notes[note_idx]);
            }
         };
-        $scope.changeLabel = function(pLabel) {
+
+        $scope.changeLabel = function(pLabel) {  // chenage label when click the label
            $scope.uncheckAll();
            setShowLabel(pLabel.eid, pLabel.name);
            $scope.getNotesFromLabel(pLabel.eid);
@@ -245,7 +246,8 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
            $scope.searchingFilter();
            $scope.pushHistory(pLabel,null);
         };
-        $scope.initLabel = function() {
+
+        $scope.initLabel = function() {  // when 'All' label is clicked, show all notes
            $scope.uncheckAll();
            setShowLabel(0,"All");
            $scope.newLabelName = "";
@@ -254,6 +256,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
            $scope.alertMsg = "";
            $scope.pushHistory({ eid : 0 }, null);
         };
+
         $scope.deleteLabel = function() {
             var dataObj = {
              id : $scope.selectedLabel
@@ -269,6 +272,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           res.error(function(data, status, headers, config) {
           });
         };
+
         $scope.newLabel = function() {
           var dataObj = {
              name : $scope.newLabelName
@@ -277,7 +281,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           var res = $http.post('/labels/create',dataObj);
         
           res.success(function(data, status, headers, config) {
-            if(data.eid != -1){
+            if(data.eid != -1){  // if valid 
               $scope.labels.push(data);
               $scope.changeLabel(data);
               $scope.newLabelName = "";
@@ -289,6 +293,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           res.error(function(data, status, headers, config) {
           }); 
        };
+
        $scope.editLabel = function() {
          var dataObj = {
            id : $scope.selectedLabel,
@@ -296,9 +301,8 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
          };
          var res = $http.post('/labels/update', dataObj);
          res.success(function(data, status, headers, config) {
-           if(data.eid != -1){
+           if(data.eid != -1){ // if valid
              var label_idx;
-
              label_idx = findLabelIndexById(data.eid);
              $scope.labels[label_idx].name = data.name;
              setShowLabel(null,data.name);
@@ -310,7 +314,8 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
          });
          res.error(function(data, status, headers, config) {
           });
-       }; 
+       };
+
        $scope.tagLabel = function(pLabel) {
           var dataObj = {
             list : $scope.checkList,
@@ -323,6 +328,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
             label_idx = findLabelIndexById(data.eid);
             $scope.labels[label_idx].item = data.item;
             $scope.labels[label_idx].notes = data.notes;
+
             $scope.getNotesFromLabel($scope.labels[label_idx].eid);
             $scope.changeLabel($scope.labels[label_idx]);
             $scope.checkList = [];
@@ -331,12 +337,14 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           res.error(function(data, status, headers, config) {
           });
        };
+
        $scope.untagLabel = function() {
          var dataObj = {
            list : $scope.checkList,
            id : $scope.selectedLabel
          }
          $scope.uncheckAll();
+
          var res = $http.post('/labels/untagLabel', dataObj);
          res.success(function(data, status, headers, config) {
             var label_id;
@@ -348,6 +356,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
             $scope.alertMsg = "notes are untagged successfully"
          });
        };
+
        $scope.deleteNoteList = function() {
          var note_idx, i;
          for(i = 0; i < $scope.checkList.length; i++){
@@ -357,13 +366,16 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
          $scope.alertMsg = "notes lists are deleted successfully"
          $scope.uncheckAll();
        };
+
 // From here, handle Notes
+
         $scope.changeCreateMode = function() {
           setShowNote("","","",0);
           $scope.editMode = false;
           $scope.alertMsg = "";
           $scope.formChangeEdit();
         };
+
         $scope.newNote = function() {
           var dataObj = {
 		subject : $scope.subject,
@@ -372,7 +384,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           var res = $http.post('/notes/create', dataObj);
 	  
           res.success(function(data, status, headers, config) {
-            if( data.eid != -1) {
+            if( data.eid != -1) { // if valid
 	      $scope.notes.push(data);
               $scope.editMode = true;
               setShowNote(null,null,data.updatedAt,data.eid);
@@ -388,6 +400,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
 	  res.error(function(data, status, headers, config) {
 	  });
         };
+
         $scope.showNote = function(pNote) {
           setShowNote(pNote.subject, pNote.content, pNote.updatedAt, pNote.eid);
           $scope.editMode = true;
@@ -395,6 +408,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           $scope.formChangeRead();
           $scope.pushHistory(null,pNote);
         };
+
         $scope.editNote = function() {
           var dataObj = {
               id : $scope.curNoteId,
@@ -403,7 +417,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           };
           var res = $http.post('/notes/update',dataObj);
                res.success(function(data, status, headers, config) {
-                  if( data.eid != -1){
+                  if( data.eid != -1){ // if valid
                     var i, note_idx;
                     note_idx = findNoteIndexById(data.eid);
                     $scope.notes[note_idx].subject = data.subject;
@@ -420,6 +434,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
                res.error(function(data, status, headers, config) {
                });
         };
+
         $scope.deleteNote = function(pNote) {
           if(pNote!=null){
             var dataObj = {
