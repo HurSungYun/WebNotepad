@@ -20,11 +20,11 @@
   <div class="col-md-2">
     <ul class="list-group">
       <li class="list-group-item" ng-click="initLabel()" ng-class="{labelBold: 0 == selectedLabel}"><span class="badge">{{notesNumber}}</span>All</li>
-      <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="changeLabel(x)" ng-class="{labelBold: x.eid==selectedLabel}"><span class="badge">{{x.item}}</span>{{x.name}}</li>
+      <li class="list-group-item" ng-repeat="x in labels track by $index" ng-click="changeLabel(x)" ng-class="{labelBold: x.eid==selectedLabel}"><span class="badge">{{x.item}}</span><i class="fa fa-tag" aria-hidden="true"></i> {{x.name}}</li>
       <li class="list-group-item">
         <form class="form" id="newLabelForm">
           <input type="text" class="form-control" id="newLabel" placeholder="new label" ng-model="newLabelName">
-          <br> <center><button class="btn btn-default" ng-click="newLabel()">Add</button></center>
+          <br> <center><button class="btn btn-default" ng-click="newLabel()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button></center>
         </form>
       </li> 
     </ul>
@@ -38,17 +38,17 @@
           <div class="col-md-8">
             <div class="row">
               <div class="col-md-3">
-                <button class="btn btn-warning smallText dropdown-toggle" ng-show="selectedLabel" type="button" data-toggle="dropdown">Label
+                <button class="btn btn-warning smallText dropdown-toggle" ng-show="selectedLabel" type="button" data-toggle="dropdown"><i class="fa fa-list-ul" aria-hidden="true"></i> Label
                   <span class="caret"></span></button>
                       <ul class="dropdown-menu list-group">
                         <li class="list-group-item" ng-show="selectedLabel"> <form class="form"> <input type="text" class="form-control" placeholder="new name" ng-model="changingLabelName"> </form></li>
-                        <li class="list-group-item" ng-click="editLabel()" ng-show="selectedLabel">Edit Label</li>
-                        <li class="list-group-item" ng-click="deleteLabel()" ng-show="selectedLabel">Delete Label</li>
+                        <li class="list-group-item" ng-click="editLabel()" ng-show="selectedLabel"><i class="fa fa-paperclip" aria-hidden="true"></i> Edit Label</li>
+                        <li class="list-group-item" ng-click="deleteLabel()" ng-show="selectedLabel"><i class="fa fa-eraser" aria-hidden="true"></i> Delete Label</li>
                       </ul>
               </div>
               <div class="col-md-3">
                 <div class="dropdown">
-                  <button class="btn btn-default dropdown-toggle smallText" type="button" data-toggle="dropdown">Tag
+                  <button class="btn btn-default dropdown-toggle smallText" type="button" data-toggle="dropdown"><i class="fa fa-tags" aria-hidden="true"></i> Tag
                     <span class="caret"></span></button>
                       <ul class="dropdown-menu list-group">
                         <li class="list-group-item" ng-repeat="x in labels | orderBy:'eid' track by $index" ng-click="tagLabel(x)">{{x.name}}</li>
@@ -56,17 +56,17 @@
                 </div>
               </div>
               <div class="col-md-3">
-                <button class="btn btn-default smallText" ng-click="untagLabel()" ng-show="selectedLabel">Untag</button>
+                <button class="btn btn-default smallText" ng-click="untagLabel()" ng-show="selectedLabel"><i class="fa fa-scissors" aria-hidden="true"></i> Untag</button>
               </div>
               <div class="col-md-3">
-                <button class="btn btn-danger smallText" ng-click="deleteNoteList()">Del List</button>
+                <button class="btn btn-danger smallText" ng-click="deleteNoteList()"><i class="fa fa-trash-o" title="Delete" aria-hidden="true"></i> Del</button>
               </div>
             </div>
           </div>
         </div>
       <div>
       <div class="row">
-        <center>Search: <input type="text" class="textType" width="70%" ng-model="noteSearch" ng-change="searchingFilter()" value="" placeholder="Search"></center><br>
+        <center><i class="fa fa-search" aria-hidden="true"></i> Search: <input type="text" class="textType" width="70%" ng-model="noteSearch" ng-change="searchingFilter()" value="" placeholder="Search"></center><br>
       </div>
         <ul class="list-group">
               <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-show="x.subject.indexOf(noteSearch) > -1 || x.content.indexOf(noteSearch) > -1" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">Subject : {{x.subject}}<br>Content : {{x.content.substring(0,10)}}<i ng-hide="x.content.length < 10 || x.content == null">......(more)</i> <br>{{x.updatedAt}}</li> 
@@ -84,8 +84,8 @@
        Content:<br>
        <textarea class="form-control" id="formTextContent" row="6" placeholder="Contents input" ng-model="content" ng-readonly="formReadonly" ng-click="formChangeEdit()"></textarea>
        <p ng-model="updatedAt" ng-show="editMode">Last Updated: {{updatedAt}}</p><br>
-       <button class="btn btn-default" id="editNoteButton" ng-click="editNote()" ng-show="editMode" ng-disabled="formReadonly">Edit</button> <button class="btn btn-danger" id="deleteNoteButton"  ng-click="deleteNote()" ng-show="editMode">Delete</button>
-       <button class="btn btn-primary" ng-click="changeCreateMode()" ng-show="editMode" id="newNoteModeButton">New Memo</button> <button class="btn btn-primary" id="newNoteButton" ng-click="newNote()" ng-hide="editMode">Apply</button>
+       <button class="btn btn-default" id="editNoteButton" ng-click="editNote()" ng-show="editMode" ng-disabled="formReadonly"><i class="fa fa-floppy-o" aria-hidden="true"></i> Edit</button> <button class="btn btn-danger" id="deleteNoteButton"  ng-click="deleteNote()" ng-show="editMode"><i class="fa fa-trash-o" title="Delete" aria-hidden="true"></i> Delete</button>
+       <button class="btn btn-primary" ng-click="changeCreateMode()" ng-show="editMode" id="newNoteModeButton"><i class="fa fa-reply" aria-hidden="true"></i> New Memo</button> <button class="btn btn-primary" id="newNoteButton" ng-click="newNote()" ng-hide="editMode"><i class="fa fa-check" aria-hidden="true"></i> Apply</button>
       </form>
     </div>
 
