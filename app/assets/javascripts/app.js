@@ -242,6 +242,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
            setShowLabel(pLabel.eid, pLabel.name);
            $scope.getNotesFromLabel(pLabel.eid);
            $scope.alertMsg = "";
+           $scope.searchingFilter();
            $scope.pushHistory(pLabel,null);
         };
         $scope.initLabel = function() {
@@ -249,6 +250,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
            setShowLabel(0,"All");
            $scope.newLabelName = "";
            $scope.showingNotes = $scope.notes;
+           $scope.searchingFilter();
            $scope.alertMsg = "";
            $scope.pushHistory({ eid : 0 }, null);
         };
@@ -406,6 +408,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
                     note_idx = findNoteIndexById(data.eid);
                     $scope.notes[note_idx].subject = data.subject;
                     $scope.notes[note_idx].content = data.content;
+                    $scope.notes[note_idx].updatedAt = data.updatedAt;
                     setShowNote(data.subject, data.content, data.updatedAt, null);
                     $scope.alertMsg = "note is updated succesfully";
                     $scope.formChangeRead();
