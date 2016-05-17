@@ -324,6 +324,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
             $scope.getNotesFromLabel($scope.labels[label_idx].eid);
             $scope.changeLabel($scope.labels[label_idx]);
             $scope.checkList = [];
+            $scope.alertMsg = "notes are tagged successfully"
           });
           res.error(function(data, status, headers, config) {
           });
@@ -342,6 +343,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
             $scope.labels[label_idx].notes = data.notes;
             $scope.getNotesFromLabel($scope.labels[label_idx].eid);
             $scope.checkList = [];
+            $scope.alertMsg = "notes are untagged successfully"
          });
        };
        $scope.deleteNoteList = function() {
@@ -350,6 +352,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
            note_idx = findNoteIndexById($scope.checkList[i]);
            $scope.deleteNote($scope.notes[note_idx]);
          }
+         $scope.alertMsg = "notes lists are deleted successfully"
          $scope.uncheckAll();
        };
 // From here, handle Notes
@@ -374,6 +377,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
               $scope.notesNumber = $scope.notesNumber + 1;
               $scope.alertMsg = "note is created successfully";
               $scope.formChangeRead();
+              $scope.searchingFilter();
               $scope.pushHistory(null,data);
             }else{
               $scope.alertMsg = "length of subject should be 1~45";
@@ -405,6 +409,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
                     setShowNote(data.subject, data.content, data.updatedAt, null);
                     $scope.alertMsg = "note is updated succesfully";
                     $scope.formChangeRead();
+                    $scope.searchingFilter();
                    }else{
                      $scope.alertMsg = "length of subject should be 1~45";
                    }
@@ -449,6 +454,7 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
              setShowNote(null,null,null,0);
              $scope.alertMsg = "note is deleted succesfully";
              $scope.formChangeEdit();
+             $scope.searchingFilter();
              $scope.pushHistory(pLabel,{ eid: 0});
           });
           res.error(function(data, status, headers, config) {
