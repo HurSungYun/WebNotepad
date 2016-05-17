@@ -13,7 +13,7 @@
         <h4 ng-model="alertMsg"><center>{{alertMsg}}</center></h4>
 </div>
 
- <h1><center>WebNotepad <p ng-init=" name='World' " ng-repeat="x in checkList">Hello {{x}}!</p></center></h1>
+ <h1><center>WebNotepad <p ng-repeat="x in checkList">Hello {{x}}! </p></center></h1>
 </div>
 
 <div class="row">
@@ -64,11 +64,13 @@
             </div>
           </div>
         </div>
-
       <div>
+      <div class="row">
+        <center>Search: <input type="text" class="textType" width="70%" ng-model="noteSearch" ng-change="searchingFilter()" value="" placeholder="Search"></center><br>
+      </div>
         <ul class="list-group">
-              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">Subject : {{x.subject}}<br>Content : {{x.content.substring(0,10)}}<i ng-hide="x.content.length < 10 || x.content == null">......(more)</i> <br>{{x.updatedAt}}</li> 
-              <li class="list-group-item" ng-hide="showingNotes.length"> No note exist here. </li>
+              <li class="list-group-item" ng-repeat="x in showingNotes | orderBy:'eid' track by $index" ng-show="x.subject.indexOf(noteSearch) > -1 || x.content.indexOf(noteSearch) > -1" ng-click="showNote(x)"><input type="checkbox" ng-click="checkNote(x)" ng-model="x.selected">Subject : {{x.subject}}<br>Content : {{x.content.substring(0,10)}}<i ng-hide="x.content.length < 10 || x.content == null">......(more)</i> <br>{{x.updatedAt}}</li> 
+              <li class="list-group-item" ng-hide="showingNotes.length && somethingFiltered"> No note exist here. </li>
         </ul> 
       </div>
 
