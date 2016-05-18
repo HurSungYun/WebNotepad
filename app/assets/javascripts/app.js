@@ -281,7 +281,9 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
           var res = $http.post('/labels/create',dataObj);
         
           res.success(function(data, status, headers, config) {
-            if(data.eid != -1){  // if valid 
+            if(data.eid == -2){
+              $scope.alertMsg = "label name should be unique";
+            }else if(data.eid != -1){  // if valid 
               $scope.labels.push(data);
               $scope.changeLabel(data);
               $scope.newLabelName = "";
@@ -301,7 +303,9 @@ myApp.controller('notecontroller',function($scope, $http, $rootScope, $window) {
          };
          var res = $http.post('/labels/update', dataObj);
          res.success(function(data, status, headers, config) {
-           if(data.eid != -1){ // if valid
+           if(data.eid == -2){
+             $scope.alertMsg = "label name should be unique";
+           }else if(data.eid != -1){ // if valid
              var label_idx;
              label_idx = findLabelIndexById(data.eid);
              $scope.labels[label_idx].name = data.name;

@@ -1,7 +1,10 @@
 class LabelsController < ApplicationController
 
 def create
-  if (params[:name].length != 0 && params[:name].length < 15) || params[:name] == nil
+
+  if Label.find_by(subject: params[:name]) != nil
+    render :json => {eid: -2}
+  elsif (params[:name].length != 0 && params[:name].length < 15) || params[:name] == nil
     @label = Label.new
     @label.subject = params[:name]
     @label.item = 0
@@ -15,7 +18,9 @@ def create
 end
 
 def update
-  if (params[:name].length != 0 && params[:name].length < 15) || params[:name] == nil
+  if Label.find_by(subject: params[:name]) != nil
+    render :json => {eid: -2}
+  elsif (params[:name].length != 0 && params[:name].length < 15) || params[:name] == nil
     @label = Label.find(params[:id])
     @label.subject = params[:name]
     if @label.save
