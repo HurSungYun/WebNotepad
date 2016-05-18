@@ -6,6 +6,8 @@ WebNotepad is a kind of notepad for web users.
 
 It is developed with Ruby on Rails and AngularJS.
 
+Used AngularJS, Ruby on Rails, Bower, Bootstrap, and Font Awesome.
+
 If you want to execute the app, use these commands.
 
 ```sh
@@ -53,7 +55,6 @@ If you check some notes and click red "Del" button, lists of notes would be dele
 ### Search
 
 If you type some words in serach input, only matching notes would be shown. It searches both subject and content.
-
 
 
 # Enjoy this app!
