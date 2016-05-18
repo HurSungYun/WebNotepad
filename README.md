@@ -1,5 +1,7 @@
 # WebNotepad
 
+[![license][license-img]][github]
+
 WebNotepad is a kind of notepad for web users. 
 
 It is developed with Ruby on Rails and AngularJS.
@@ -12,5 +14,8 @@ $ cd WebNotepad
 $ rails server -p [port]
 ```
 
-Documentation and API are in Wiki. (Testing Scenario also)
+This app is designed for single user at once. Therefore, Concurrency haven't considered.
 
+Documentation and API are in Wiki. (Testing Scenarios and comments are also included)
+
+Enjoy this app!
