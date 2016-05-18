@@ -1,7 +1,5 @@
 # WebNotepad
 
-[![license][license-img]][github]
-
 WebNotepad is a kind of notepad for web users. 
 
 It is developed with Ruby on Rails and AngularJS.
