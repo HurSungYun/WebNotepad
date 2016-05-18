@@ -1,5 +1,7 @@
 # WebNotepad
 
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
+
 WebNotepad is a kind of notepad for web users. 
 
 It is developed with Ruby on Rails and AngularJS.
